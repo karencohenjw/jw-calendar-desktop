@@ -491,14 +491,18 @@ class CalendarWindow(Adw.ApplicationWindow):
             "Export calendar", self, Gtk.FileChooserAction.SAVE, "Save", "Cancel"
         )
         chooser.set_current_name(filename)
+        self._active_chooser = chooser
 
         def response(dialog, response_id):
-            if response_id == Gtk.ResponseType.ACCEPT:
-                file = dialog.get_file()
-                path = file.get_path() if file else None
-                if path:
-                    Path(path).write_text(content, encoding="utf-8")
-            dialog.destroy()
+            try:
+                if response_id == Gtk.ResponseType.ACCEPT:
+                    file = dialog.get_file()
+                    path = file.get_path() if file else None
+                    if path:
+                        Path(path).write_text(content, encoding="utf-8")
+            finally:
+                dialog.destroy()
+                self._active_chooser = None
 
         chooser.connect("response", response)
         chooser.show()
