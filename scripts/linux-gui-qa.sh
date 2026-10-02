@@ -169,7 +169,7 @@ with path.open(encoding="utf-8", newline="") as stream:
     rows = list(reader)
 new_year = next((row for row in rows if row["date"] == "2027-01-01"), None)
 assert new_year, "CSV is missing 2027-01-01"
-assert new_year["weekday"] == "Sun", f"Expected abbreviated Sunday, got {new_year['weekday']!r}"
+assert new_year["weekday"] == "Fri", f"Expected abbreviated Friday, got {new_year['weekday']!r}"
 Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
