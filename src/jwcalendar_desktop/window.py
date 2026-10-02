@@ -462,7 +462,8 @@ class CalendarWindow(Adw.ApplicationWindow):
     def _copy_date(self, *_args) -> None:
         display = Gdk.Display.get_default()
         if display:
-            display.get_clipboard().set_text(self._selected_date)
+            provider = Gdk.ContentProvider.new_for_value(self._selected_date)
+            display.get_clipboard().set_content(provider)
 
     def _choose_html_export(self) -> None:
         content = month_html(
