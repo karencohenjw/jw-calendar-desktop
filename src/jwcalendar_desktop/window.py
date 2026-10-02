@@ -196,7 +196,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         scroller = Gtk.ScrolledWindow()
         scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroller.set_vexpand(True)
-        Gtk.Grid(column_spacing=14, row_spacing=8)
+        self._year_grid = Gtk.Grid(column_spacing=14, row_spacing=8)
         self._year_grid.set_column_homogeneous(True)
         scroller.set_child(self._year_grid)
         page.append(scroller)
