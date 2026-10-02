@@ -1,7 +1,11 @@
 # Security policy
 
-JW Calendar is an offline desktop utility. It has no network client, account system, telemetry, or background service. Export files are written only after the user chooses a destination in the desktop file chooser.
+## Supported versions
 
-This repository does not currently offer a private security reporting channel or promise confidential vulnerability handling. Do not include exploit details, secrets, or private personal data in a public issue. Non-sensitive bugs can be reported through [GitHub Issues](https://github.com/karencohenjw/jw-calendar-desktop/issues).
+JW Calendar `v0.1.0` is the current supported release. Security fixes will be made in the latest supported release.
 
-Until the owner publishes that private route, this repository does not promise private vulnerability reporting.
+## Reporting a vulnerability
+
+Please report suspected vulnerabilities through [GitHub Private Vulnerability Reporting](https://github.com/karencohenjw/jw-calendar-desktop/security/advisories). On the repository's Security → Advisories page, choose **Report a vulnerability** to send details privately to the maintainers.
+
+Do not post sensitive vulnerability details, exploit code, credentials, or private personal data in public Issues. GitHub Issues are available for ordinary, non-sensitive bug reports: [JW Calendar Issues](https://github.com/karencohenjw/jw-calendar-desktop/issues).
