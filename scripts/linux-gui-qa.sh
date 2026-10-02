@@ -116,6 +116,21 @@ fi
 test -s "$artifact_dir/year-view.png"
 test -s "$artifact_dir/convert-view.png"
 test -s "$artifact_dir/help-view.png"
+python - "$artifact_dir" <<'PY'
+import struct
+import sys
+from pathlib import Path
+
+for path in sorted(Path(sys.argv[1]).glob("*-view.png")):
+    with path.open("rb") as stream:
+        header = stream.read(24)
+    assert header[:8] == b"\x89PNG\r\n\x1a\n", f"{path} is not a PNG"
+    width, height = struct.unpack(">II", header[16:24])
+    assert width <= 1000 and height <= 700, (
+        f"{path.name} is {width}x{height}; Flathub screenshots must be at most 1000x700"
+    )
+    print(f"PASS: {path.name} is {width}x{height} pixels (native window capture).")
+PY
 
 
 window_count_before="$(wmctrl -l | wc -l)"

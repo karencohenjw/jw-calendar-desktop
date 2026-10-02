@@ -19,7 +19,7 @@ jobs:
           sudo apt-get install --yes \
             adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core gnome-screenshot \
             gir1.2-adw-1 gir1.2-gtk-4.0 libadwaita-1-dev libgtk-4-dev \
-            openbox picom pkg-config python3-gi python3-pyatspi wmctrl xdg-desktop-portal \
+            openbox picom pkg-config python3-gi python3-pyatspi scrot wmctrl xdg-desktop-portal \
             xdg-desktop-portal-gtk xdotool xvfb
       - name: Record versions and install the clean checkout
         run: |
