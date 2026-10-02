@@ -164,7 +164,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         details.add(self._detail_label)
         content.append(details)
         page.append(content)
-        self.stack.add_titled(page, "month", "Month")
+        self.stack.add_titled_with_icon(page, "month", "Month", "x-office-calendar-symbolic")
 
         self._month_spin.connect("value-changed", self._month_control_changed)
         self._month_dropdown.connect("notify::selected", self._month_control_changed)
@@ -200,7 +200,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._year_grid.set_column_homogeneous(True)
         scroller.set_child(self._year_grid)
         page.append(scroller)
-        self.stack.add_titled(page, "year", "Year")
+        self.stack.add_titled_with_icon(page, "year", "Year", "view-grid-symbolic")
         self._year_spin.connect("value-changed", self._year_control_changed)
         self._year_kind.connect("notify::selected", self._year_control_changed)
 
@@ -248,7 +248,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._difference_result.set_selectable(True)
         difference.add(self._difference_result)
         page.append(difference)
-        self.stack.add_titled(page, "convert", "Convert")
+        self.stack.add_titled_with_icon(page, "convert", "Convert", "accessories-calculator-symbolic")
 
     def _build_help_page(self) -> None:
         page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=18)
@@ -266,6 +266,14 @@ class CalendarWindow(Adw.ApplicationWindow):
         )
         intro.set_vexpand(True)
         page.append(intro)
+        intro.set_title("")
+        intro.set_description("")
+        intro_title = Gtk.Label(label="Calendar reference, offline", xalign=0)
+        intro_title.add_css_class("title-2")
+        page.append(intro_title)
+        intro_description = Gtk.Label(label="Browse Gregorian and Julian dates, convert calendars, and export print-ready month layouts.", xalign=0, wrap=True)
+        intro_description.add_css_class("dim-label")
+        page.append(intro_description)
         appearance = Adw.PreferencesGroup(title="Appearance")
         appearance.set_description("Follow the desktop, or choose a light or dark window theme.")
         self._appearance_dropdown = Gtk.DropDown.new_from_strings(["System", "Light", "Dark"])
@@ -289,7 +297,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         ):
             resources.add(Gtk.LinkButton.new_with_label(uri, label))
         page.append(resources)
-        self.stack.add_titled(page, "help", "Help")
+        self.stack.add_titled_with_icon(page, "help", "Help", "help-about-symbolic")
 
     def _go_to_today(self, *_args) -> None:
         today = date.today()
