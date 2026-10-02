@@ -39,6 +39,8 @@ class WindowSmokeTests(unittest.TestCase):
         self.assertEqual(window._year, today.year + (1 if today.month == 12 else 0))
         window._year_spin.set_value(window._year + 1)
         self.assertEqual(window._year, today.year + (1 if today.month == 12 else 0) + 1)
+        window._month_spin.set_value(2028)
+        window._month_dropdown.set_selected(1)
         window._select_date(None, CivilDate(2028, 2, 29))
         self.assertEqual(window._selected_date, "2028-02-29")
         selected_button = window._calendar_grid.get_first_child()
