@@ -6,9 +6,9 @@ This document records engineering findings for a future human-led package review
 
 Proposed application ID: `com.jwcalendar.JWCalendar`. It uses the reverse-DNS form for the controlled `jwcalendar.com` domain. Before submission, the owner must verify the exact ID against current Flathub rules and use the Flathub Developer Portal to obtain a real verification token. Only then publish that token at `https://jwcalendar.com/.well-known/org.flathub.VerifiedApps.txt` (or use the currently supported DNS method). Never invent or commit a token.
 
-Canonical homepage: `https://jwcalendar.com/`. The upstream repository is planned at `https://github.com/karencohenjw/jw-calendar-desktop`; verify those public links after the owner creates it.
+Canonical homepage: `https://jwcalendar.com/`. The public upstream repository and issue tracker are `https://github.com/karencohenjw/jw-calendar-desktop` and `https://github.com/karencohenjw/jw-calendar-desktop/issues`.
 
-The public upstream repository now exists at `https://github.com/karencohenjw/jw-calendar-desktop`. It currently has only the initial development history; the first commit is not evidence of sustained maintenance.
+The public upstream repository now contains the application, tests, metadata, CI, Snap packaging, and human packaging guidance. Its commits were made during the initial project setup on 2026-10-02; that short history is not evidence of sustained maintenance or real-world use.
 
 ## Runtime and build shape
 
@@ -35,7 +35,7 @@ The GNOME runtime research snapshot is GNOME 50 as of 2026-10-02. Re-check the n
 | Desktop integration | Desktop entry, app ID, scalable icon included | Pass, pending install verification | `data/com.jwcalendar.JWCalendar.desktop`; icon path | Verify installation and launching from a Flatpak build |
 | Source and issue links | Public repository and issue tracker exist | Pass | AppStream and Snap metadata point to the public upstream repository | Re-check links during final public audit |
 | Permissions | No broad permissions planned | Pass, pending sandbox test | No network/background access; user-chosen export and clipboard only | Validate GTK file chooser portal and clipboard in a sandbox |
-| Release information | Development state only | Fail | New repository; no meaningful release history | Build a real history through human-maintained changes; tag a stable release only after validation |
+| Release information | 0.1.0 source release candidate | Pending final release record | Initial feature set and Linux CI are in place; this new same-day history does not establish ongoing maintenance | Verify the final CI run, publish the source tag/release honestly, then build sustained history through ongoing human maintenance |
 | Verification | Domain method identified, no token | Fail until owner action | `jwcalendar.com` is canonical homepage | Obtain actual token in Developer Portal and publish it; never fabricate one |
 | Offline operation | Core path and exports do not use network | Pass, pending runtime test | Source has no network client | Test with network unavailable in Linux environment |
 | Accessibility and localization | Basic labels and selectable details; locale names | Fail / incomplete | Uses system month/day names; visual review not available here | Review keyboard focus, screen reader labels, RTL/layout, and translation readiness |
@@ -44,9 +44,9 @@ The GNOME runtime research snapshot is GNOME 50 as of 2026-10-02. Re-check the n
 ## Blocking work before a legitimate submission
 
 1. Human owner review of all AI-assisted source, assets, and metadata; keep the provenance disclosure accurate.
-2. Sustained development and meaningful maintenance history. Do not manufacture commits, tags, releases, or contributors.
-3. Linux build and real UI validation, including screenshots, keyboard and accessibility review, file chooser portal behavior, and offline operation.
-4. Genuine screenshots and a stable release with matching AppStream release metadata.
+2. Sustained development and meaningful maintenance history beyond the initial same-day setup. Do not manufacture commits, tags, releases, or contributors.
+3. Human visual review on Linux, genuine screenshots, keyboard and accessibility review, file chooser portal behavior, and offline operation. Automated GTK checks run under Xvfb but do not replace this review.
+4. Keep the stable source release and matching AppStream release record aligned; capture genuine Linux screenshots separately after visual review.
 5. Select and verify a currently supported runtime, build every dependency offline from pinned sources, and verify the app ID and domain through Flathub's then-current process.
 6. Confirm and publish a real private security contact route.
 7. A human maintainer prepares any eventual Flathub packaging and all submission communication. This repository has no final Flatpak manifest or submission PR.
