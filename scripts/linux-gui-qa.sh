@@ -120,6 +120,55 @@ window_count_after="$(wmctrl -l | wc -l)"
 xdotool key Escape
 sleep 1
 echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
+
+open_export_chooser() {
+  xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
+  sleep 0.5
+  xdotool key --clearmodifiers "$1" Return
+  sleep 1
+  scrot --focused "$artifact_dir/$2-chooser.png"
+}
+
+window_count_before="$(wmctrl -l | wc -l)"
+open_export_chooser Down csv
+window_count_after="$(wmctrl -l | wc -l)"
+[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
+xdotool key Return
+sleep 2
+csv_path="$HOME/january-2027.csv"
+python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
+import csv
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+assert path.is_file(), f"CSV was not created at {path}"
+with path.open(encoding="utf-8", newline="") as stream:
+    rows = list(csv.DictReader(stream))
+assert rows and any(row["date"] == "2027-01-01" for row in rows)
+assert rows[0]["weekday"] == "Sunday"
+print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
+PY
+
+window_count_before="$(wmctrl -l | wc -l)"
+open_export_chooser Up html
+window_count_after="$(wmctrl -l | wc -l)"
+[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
+xdotool key Return
+sleep 2
+python - "$HOME/january-2027.html" <<'PY' | tee "$artifact_dir/html-export.txt"
+import re
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+assert path.is_file(), f"HTML was not created at {path}"
+html = path.read_text(encoding="utf-8")
+assert "January 2027" in html
+assert not re.search(r"(?:src|href)=[\"']https?://", html, re.I)
+print("PASS: HTML saved, contains the calendar, and has no remote assets.")
+PY
+
 # The application should remain running after presenting a real GTK window.
 if ! kill -0 "$app_pid" 2>/dev/null; then
   cat "$artifact_dir/application.log"
