@@ -80,6 +80,9 @@ print("PASS: Shift+Tab returns focus through the GTK control order")
 
 # Space activates a focused date, updates selected-date details, and keeps a
 # full date/calendar/ISO-week description on the selected grid cell.
+import re
+
+
 def focused_names():
     return {
         node.get_name() for node in app_tree()
@@ -88,34 +91,29 @@ def focused_names():
 
 
 assert focused_date_name in focused_names(), "Tab did not return to the same date cell"
+focused_date = focused_date_name.split(", ")[1]
 key("space")
-after = names()
-assert any("ISO week:" in name for name in after), "Selected date details are missing ISO week"
-print("PASS: Space activates a keyboard-focused date and exposes its details")
+def detail_date():
+    for name in names():
+        match = re.search(r"Gregorian: (\d{4}-\d{2}-\d{2})", name)
+        if match:
+            return match.group(1)
+    raise AssertionError("Selected-date details are missing the Gregorian date")
 
-def selected_date():
-    date_names = []
-    for node in app_tree():
-        name = node.get_name()
-        if "ISO week" in name:
-            date_names.append(name)
-        if name.startswith("Selected date, ") and "ISO week" in name:
-            return name.split(", ")[2]
-    raise AssertionError(
-        "The selected calendar date is not announced in its accessible name; "
-        f"date labels were {date_names[:8]}"
-    )
+assert detail_date() == focused_date, "Space did not select the keyboard-focused date"
+assert any("ISO week:" in name for name in names()), "Selected date details are missing ISO week"
+print("PASS: Space activates a keyboard-focused date and updates its accessible details")
 
 
-original = selected_date()
+original = detail_date()
 key("ctrl+Right")
-later_year = selected_date()
+later_year = detail_date()
 assert later_year.split("-")[0] == str(int(original.split("-")[0]) + 1)
 key("ctrl+Left")
-restored = selected_date()
+restored = detail_date()
 assert restored.split("-")[0] == original.split("-")[0]
 key("Left")
-previous_month = selected_date()
+previous_month = detail_date()
 assert previous_month[:7] != restored[:7], "Left did not change the displayed month"
 key("Right")
 print("PASS: Ctrl+Left/Right changes the year; Left/Right changes the month")

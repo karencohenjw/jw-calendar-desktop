@@ -7,7 +7,7 @@ This records a real GTK/AT-SPI keyboard audit under Ubuntu/Xvfb. It is not a WCA
 - Tab and Shift+Tab use GTK's normal focus order; calendar date buttons remain individual focusable controls. Enter or Space activates buttons. The native save dialog supports Escape to cancel.
 - In Month, Left/Right changes the month and Ctrl+Left/Ctrl+Right changes the year. Ctrl+1 through Ctrl+4 opens Month, Year, Convert, and Help.
 - Enter in the date conversion field runs Convert. Enter in the end-date field runs Calculate.
-- Copy, Export, About, previous month, and next month actions have explicit accessible names. Dropdowns and date inputs have names; date buttons announce weekday, full date, calendar, and ISO week. The selected date is identified in its accessible name.
+- Copy, Export, About, previous month, and next month actions have explicit accessible names. Dropdowns and date inputs have names; date buttons announce weekday, full date, calendar, and ISO week. Selecting a date updates the accessible date details.
 - Changing a selected date preserves keyboard focus on its date button.
 
 ## Verification boundaries

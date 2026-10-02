@@ -394,8 +394,8 @@ class CalendarWindow(Adw.ApplicationWindow):
                     is_selected = iso_date(cell.date) == self._selected_date
                     self._accessible_name(
                         button,
-                        f"{'Selected date, ' if is_selected else ''}{details['weekday']}, "
-                        f"{iso_date(cell.date)}, {self._kind}, ISO week {cell.iso_week}",
+                        f"{details['weekday']}, {iso_date(cell.date)}, "
+                        f"{self._kind}, ISO week {cell.iso_week}",
                     )
                     button.update_state(
                         [Gtk.AccessibleState.SELECTED],
