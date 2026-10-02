@@ -78,6 +78,15 @@ sleep 1
 xdotool mousemove --sync 1240 860
 sleep 1
 scrot --focused --border "$artifact_dir/month-view.png"
+xdotool mousemove --sync "$((X + 428))" "$((Y + 30))" click 1
+sleep 1
+scrot --focused --border "$artifact_dir/year-view.png"
+xdotool mousemove --sync "$((X + 532))" "$((Y + 30))" click 1
+sleep 1
+scrot --focused --border "$artifact_dir/convert-view.png"
+xdotool mousemove --sync "$((X + 628))" "$((Y + 30))" click 1
+sleep 1
+scrot --focused --border "$artifact_dir/help-view.png"
 
 wmctrl -lG | tee "$artifact_dir/windows.txt"
 if [[ ! -s "$artifact_dir/month-view.png" ]]; then
@@ -85,6 +94,10 @@ if [[ ! -s "$artifact_dir/month-view.png" ]]; then
   exit 1
 fi
 
+
+test -s "$artifact_dir/year-view.png"
+test -s "$artifact_dir/convert-view.png"
+test -s "$artifact_dir/help-view.png"
 # The application should remain running after presenting a real GTK window.
 if ! kill -0 "$app_pid" 2>/dev/null; then
   cat "$artifact_dir/application.log"
