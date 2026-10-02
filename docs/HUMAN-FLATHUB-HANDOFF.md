@@ -17,6 +17,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 - Network permission for core behavior: not needed.
 - Broad home/host filesystem access: not needed. User-selected export destinations should use a portal.
 - Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python, GTK/Xvfb, metadata, and Snap build checks in GitHub Actions. Check the latest run and final release commit before treating them as release evidence. Xvfb is not a substitute for visual review on a real Linux desktop.
+- Clean public checkout: the `v0.1.0` tag was cloned into a new empty directory. Python 3.12 `pip install .` built and installed the package; `python -m build` produced an sdist and wheel; 25 tests passed and 2 GTK display tests skipped locally. Linux CI passed the GTK/Xvfb tests and stable-grade amd64 Snap build.
 
 ## Runtime and source research snapshot — 2026-10-02
 
