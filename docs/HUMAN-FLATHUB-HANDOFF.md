@@ -6,7 +6,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 
 - Application ID: `com.jwcalendar.JWCalendar`
 - Upstream: https://github.com/karencohenjw/jw-calendar-desktop
-- Stable tag / commit / source archive URL / archive SHA-256: fill from the actual GitHub 0.1.0 release after the final CI run; do not invent these values.
+- Stable tag: `v0.1.0` (commit `7a42fa52c450a5c8b14827d5b858f0631c8a42d1`). Source archive: https://github.com/karencohenjw/jw-calendar-desktop/archive/refs/tags/v0.1.0.tar.gz. Archive SHA-256 has not been captured; calculate it from the downloaded GitHub archive before using it in human-authored packaging.
 - License: MIT; see `LICENSE`.
 - CLI executable: `jwcalendar`
 - Desktop executable: `jw-calendar-desktop`
