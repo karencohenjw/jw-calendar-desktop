@@ -1,0 +1,42 @@
+name: Linux GUI QA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gui:
+    name: Ubuntu 24.04 GTK window and screenshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install a Linux display and desktop session
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core \
+            gir1.2-adw-1 gir1.2-gtk-4.0 openbox picom python3-gi \
+            scrot wmctrl xdotool xvfb
+      - name: Record versions and install the clean checkout
+        run: |
+          lsb_release -ds
+          pkg-config --modversion gtk4 libadwaita-1
+          /usr/bin/python3 -m venv --system-site-packages .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install .
+      - name: Launch and capture the actual GTK application
+        run: |
+          .venv/bin/python -m pip install build
+          PATH="$PWD/.venv/bin:$PATH" xvfb-run -a \
+            --server-args="-screen 0 1280x900x24" \
+            dbus-run-session -- bash scripts/linux-gui-qa.sh artifacts/linux-gui-qa
+      - name: Upload diagnostic Linux GUI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jw-calendar-linux-gui-qa
+          path: artifacts/linux-gui-qa/
+          if-no-files-found: warn
