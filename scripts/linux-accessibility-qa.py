@@ -43,11 +43,11 @@ def key(*keys):
 
 tree = app_tree()
 date_controls = [
-    (node.get_role_name(), node.get_name())
+    (node.get_role_name(), node.get_name(), node.get_description())
     for node in tree
-    if "ISO week" in node.get_name()
+    if "ISO week" in (node.get_description() or "")
 ]
-print(f"AT-SPI date-related controls: {date_controls[:12]}")
+print(f"AT-SPI date-related controls: {date_controls[:6]}")
 assert any(node.get_name() == "Copy selected date" for node in tree)
 assert any(node.get_name() == "Export calendar" for node in tree)
 assert any(node.get_name() == "About JW Calendar" for node in tree)
@@ -65,12 +65,9 @@ for _ in range(45):
         try:
             if node.get_state_set().contains(pyatspi.STATE_FOCUSED):
                 focusable.add(node.get_name())
-                if (
-                    node.get_role_name() == "push button"
-                    and ", " in node.get_name()
-                    and "ISO week" in node.get_name()
-                ):
-                    focused_date_name = node.get_name()
+                description = node.get_description() or ""
+                if node.get_role_name() == "push button" and "ISO week" in description:
+                    focused_date_name = description
                     break
         except Exception:
             pass
@@ -101,8 +98,14 @@ def focused_names():
     }
 
 
-assert focused_date_name in focused_names(), "Tab did not return to the same date cell"
-focused_date = focused_date_name.split(", ")[1]
+assert any(
+    node.get_state_set().contains(pyatspi.STATE_FOCUSED)
+    and node.get_role_name() == "push button"
+    and node.get_description() == focused_date_name
+    for node in app_tree()
+), "Tab did not return to the same date cell"
+focused_parts = focused_date_name.split(", ")
+focused_date = focused_parts[2] if focused_parts[0] == "Selected date" else focused_parts[1]
 key("Return")
 def detail_date():
     for name in names():

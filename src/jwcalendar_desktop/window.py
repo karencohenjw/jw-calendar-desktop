@@ -389,13 +389,16 @@ class CalendarWindow(Adw.ApplicationWindow):
                     button.add_css_class("flat")
                     button.set_hexpand(True)
                     button.set_size_request(-1, 44)
-                    button.set_tooltip_text(f"{iso_date(cell.date)} · {cell.iso_week or 'week —'}")
                     details = date_details(cell.date)
                     is_selected = iso_date(cell.date) == self._selected_date
-                    self._accessible_name(
-                        button,
+                    accessible_description = (
+                        f"{'Selected date, ' if is_selected else ''}"
                         f"{details['weekday']}, {iso_date(cell.date)}, "
-                        f"{self._kind}, ISO week {cell.iso_week}",
+                        f"{self._kind}, ISO week {cell.iso_week}"
+                    )
+                    button.set_tooltip_text(accessible_description)
+                    button.update_property(
+                        [Gtk.AccessibleProperty.DESCRIPTION], [accessible_description]
                     )
                     button.update_state(
                         [Gtk.AccessibleState.SELECTED],
