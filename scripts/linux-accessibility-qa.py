@@ -51,15 +51,18 @@ print("PASS: icon-only actions and month navigation have accessible names")
 # Tab through the real Month page and confirm calendar dates can receive focus.
 key("ctrl+1")
 focusable = set()
+focused_date_name = None
 for _ in range(45):
     key("Tab")
     for node in app_tree():
         try:
             if node.get_state_set().contains(pyatspi.STATE_FOCUSED):
                 focusable.add(node.get_name())
+                if ", " in node.get_name() and "ISO week" in node.get_name():
+                    focused_date_name = node.get_name()
         except Exception:
             pass
-assert any(name and ", " in name and "ISO week" in name for name in focusable), (
+assert focused_date_name, (
     f"Tab did not reach a named date cell; focused names were {sorted(focusable)}"
 )
 print("PASS: Tab reaches an announced calendar date")
@@ -81,13 +84,7 @@ def focused_names():
     }
 
 
-focused_date = False
-for _ in range(45):
-    if any(", " in name and "ISO week" in name for name in focused_names()):
-        focused_date = True
-        break
-    key("Tab")
-assert focused_date, "Keyboard focus did not reach a named date cell"
+assert focused_date_name in focused_names(), "Tab did not return to the same date cell"
 key("space")
 after = names()
 assert any("ISO week:" in name for name in after), "Selected date details are missing ISO week"
