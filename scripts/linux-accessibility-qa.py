@@ -60,8 +60,11 @@ for _ in range(45):
                 focusable.add(node.get_name())
                 if ", " in node.get_name() and "ISO week" in node.get_name():
                     focused_date_name = node.get_name()
+                    break
         except Exception:
             pass
+    if focused_date_name:
+        break
 assert focused_date_name, (
     f"Tab did not reach a named date cell; focused names were {sorted(focusable)}"
 )
