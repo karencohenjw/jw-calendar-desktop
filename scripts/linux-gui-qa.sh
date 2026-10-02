@@ -53,7 +53,7 @@ if [[ -z "$window_id" ]]; then
   exit 1
 fi
 
-wmctrl -ir "$window_id" -e 0,40,40,960,640
+wmctrl -ir "$window_id" -e 0,40,40,960,700
 wmctrl -ia "$window_id"
 sleep 2
 
@@ -82,6 +82,11 @@ xdotool mousemove --sync "$((X + 428))" "$((Y + 30))" click 1
 sleep 1
 scrot --focused --border "$artifact_dir/year-view.png"
 xdotool mousemove --sync "$((X + 532))" "$((Y + 30))" click 1
+sleep 1
+scrot --focused --border "$artifact_dir/convert-view.png"
+xdotool mousemove --sync "$((X + 385))" "$((Y + 145))" click 1
+sleep 1
+xdotool mousemove --sync 1240 860
 sleep 1
 scrot --focused --border "$artifact_dir/convert-view.png"
 xdotool mousemove --sync "$((X + 628))" "$((Y + 30))" click 1
