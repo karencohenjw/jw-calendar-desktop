@@ -124,7 +124,10 @@ echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact
 open_export_chooser() {
   xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
   sleep 0.5
-  xdotool key --clearmodifiers "$1" Return
+  if [[ -n "$1" ]]; then
+    xdotool key --clearmodifiers "$1"
+  fi
+  xdotool key --clearmodifiers Return
   sleep 1
   scrot --focused "$artifact_dir/$2-chooser.png"
 }
@@ -178,7 +181,7 @@ print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
 
 window_count_before="$(wmctrl -l | wc -l)"
-open_export_chooser Up html
+open_export_chooser "" html
 window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
 html_path="$PWD/january-2027.html"
