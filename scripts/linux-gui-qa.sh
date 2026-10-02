@@ -57,12 +57,12 @@ wmctrl -ir "$window_id" -e 0,40,40,960,700
 wmctrl -ia "$window_id"
 sleep 2
 
-# Focus an icon button so the app-level left/right navigation is active, then
+# Reset to today, then use the app-level arrow keys to reach January 2027.
 # move from the runner's current month to January 2027 using real key events.
 window_geometry="$(xdotool getwindowgeometry --shell "$window_id")"
 X="$(awk -F= '/^X=/{print $2}' <<<"$window_geometry")"
 Y="$(awk -F= '/^Y=/{print $2}' <<<"$window_geometry")"
-xdotool mousemove --sync "$((X + 18))" "$((Y + 48))" click 1
+xdotool mousemove --sync "$((X + 650))" "$((Y + 95))" click 1
 read -r month_delta < <(/usr/bin/python3 - <<'PY'
 from datetime import date
 today = date.today()
