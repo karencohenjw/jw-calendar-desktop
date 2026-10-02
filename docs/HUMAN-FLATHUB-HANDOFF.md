@@ -6,7 +6,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 
 - Application ID: `com.jwcalendar.JWCalendar`
 - Upstream: https://github.com/karencohenjw/jw-calendar-desktop
-- Stable tag / commit / source archive URL / archive SHA-256: pending an actual stable release; do not invent these values.
+- Stable tag / commit / source archive URL / archive SHA-256: fill from the actual GitHub 0.1.0 release after the final CI run; do not invent these values.
 - License: MIT; see `LICENSE`.
 - CLI executable: `jwcalendar`
 - Desktop executable: `jw-calendar-desktop`
@@ -16,7 +16,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 - Python package: `jwcalendar-calendrical==0.1.0`, MIT; verified source archive and SHA-256 are in `DEPENDENCIES.md`.
 - Network permission for core behavior: not needed.
 - Broad home/host filesystem access: not needed. User-selected export destinations should use a portal.
-- Architectures tested in this initial work: macOS arm64 Python unit suite only; Linux CI has not completed yet. Do not imply a Linux architecture is tested until its CI run passes.
+- Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python, GTK/Xvfb, metadata, and Snap build checks in GitHub Actions. Check the latest run and final release commit before treating them as release evidence. Xvfb is not a substitute for visual review on a real Linux desktop.
 
 ## Runtime and source research snapshot — 2026-10-02
 
@@ -30,8 +30,8 @@ The application uses `Gtk.FileChooserNative` for user-directed file exports and 
 
 ## Human work before submission
 
-- Wait for real project history and evidence of maintenance/use; this repository begins with one initial development commit.
-- Complete Linux CI, desktop/AppStream validation, real release and clean public checkout.
+- Build sustained project history and evidence of maintenance/use; all current commits belong to the initial same-day setup.
+- Confirm the final Linux CI, desktop/AppStream validation, published source release, and clean public checkout.
 - Capture real Linux screenshots and publish them at immutable release URLs.
 - Re-check the current runtime, SDK, policies, package sources, licenses, and domain proof.
 - Have a human create and review all packaging files, run the offline build and linters, and perform local install/run checks.
