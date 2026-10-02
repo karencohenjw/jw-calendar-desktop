@@ -136,8 +136,11 @@ save_native_dialog() {
   geometry="$(xdotool getwindowgeometry --shell "$chooser_id")"
   width="$(awk -F= '/^WIDTH=/{print $2}' <<<"$geometry")"
   height="$(awk -F= '/^HEIGHT=/{print $2}' <<<"$geometry")"
-  # GTK's native dialog keeps the filename field focused; explicitly activate
-  # its Save button so the GUI check verifies a completed save, not just input.
+  # GTK can retain the previous export's filename when the format changes.
+  # Set the expected basename explicitly, then activate Save so the check
+  # verifies a completed write rather than only an open dialog.
+  xdotool key --clearmodifiers ctrl+a
+  xdotool type --clearmodifiers --delay 1 -- "$(basename "$expected_path")"
   xdotool mousemove --window "$chooser_id" "$((width - 48))" "$((height - 29))" click 1
   for attempt in $(seq 1 40); do
     if ! xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 && [[ -s "$expected_path" ]]; then
