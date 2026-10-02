@@ -129,12 +129,23 @@ open_export_chooser() {
   scrot --focused "$artifact_dir/$2-chooser.png"
 }
 
+save_native_dialog() {
+  local chooser_id geometry width height
+  chooser_id="$(xdotool search --onlyvisible --name '^Export calendar$' | tail -n 1)"
+  [[ -n "$chooser_id" ]] || { echo "Native save dialog did not remain visible." >&2; exit 1; }
+  geometry="$(xdotool getwindowgeometry --shell "$chooser_id")"
+  width="$(awk -F= '/^WIDTH=/{print $2}' <<<"$geometry")"
+  height="$(awk -F= '/^HEIGHT=/{print $2}' <<<"$geometry")"
+  # GTK's native dialog keeps the filename field focused; explicitly activate
+  # its Save button so the GUI check verifies a completed save, not just input.
+  xdotool mousemove --window "$chooser_id" "$((width - 48))" "$((height - 29))" click 1
+  sleep 2
+}
 window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Down csv
 window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
-xdotool key Return
-sleep 2
+save_native_dialog
 csv_path="$PWD/january-2027.csv"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
@@ -155,8 +166,7 @@ window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Up html
 window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
-xdotool key Return
-sleep 2
+save_native_dialog
 python - "$PWD/january-2027.html" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
 import sys

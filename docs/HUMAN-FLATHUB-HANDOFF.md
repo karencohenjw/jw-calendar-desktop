@@ -16,7 +16,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 - Python package: `jwcalendar-calendrical==0.1.0`, MIT; verified source archive and SHA-256 are in `DEPENDENCIES.md`.
 - Network permission for core behavior: not needed.
 - Broad home/host filesystem access: not needed. User-selected export destinations should use a portal.
-- Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python, GTK/Xvfb, metadata, and Snap build checks in GitHub Actions. Check the latest run and final release commit before treating them as release evidence. Xvfb is not a substitute for visual review on a real Linux desktop.
+- Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python, GTK/Xvfb, metadata, and Snap build checks in GitHub Actions. Linux CI #50 on public commit `efe266c` passed. Linux GUI QA #14 opened and cancelled the native chooser, then failed its CSV file-save assertion. Xvfb is not a substitute for visual review on a real Linux desktop.
 - Clean public checkout: the `v0.1.0` tag was cloned into a new empty directory. Python 3.12 `pip install .` built and installed the package; `python -m build` produced an sdist and wheel; 25 tests passed and 2 GTK display tests skipped locally. Linux CI passed the GTK/Xvfb tests and stable-grade amd64 Snap build.
 
 ## Runtime and source research snapshot — 2026-10-02
@@ -33,7 +33,8 @@ The application uses `Gtk.FileChooserNative` for user-directed file exports and 
 
 - Build sustained project history and evidence of maintenance/use; all current commits belong to the initial same-day setup.
 - Confirm the final Linux CI, desktop/AppStream validation, published source release, and clean public checkout.
-- Capture real Linux screenshots and publish them at immutable release URLs.
+- Four genuine 960 × 700 Ubuntu GUI screenshots exist in the local checkout at `data/screenshots/`; they have not been pushed to public `main`. Push them first, record the resulting commit SHA, then add AppStream URLs pinned to that SHA. Local AppStream screenshot URLs and `0.1.1` release metadata are draft-only; public stable remains `v0.1.0`.
+- Fix the GUI save automation and pass actual CSV/HTML write and content checks. The latest public GUI QA run confirmed chooser open/cancel but failed on the CSV save assertion.
 - Re-check the current runtime, SDK, policies, package sources, licenses, and domain proof.
 - Have a human create and review all packaging files, run the offline build and linters, and perform local install/run checks.
 - Human must perform all Flathub submission and reviewer communication. This project task did not create or submit anything there.

@@ -1,21 +1,19 @@
 # Accessibility review
 
-This is a code-level review of the initial Linux interface, not a claim of WCAG or assistive-technology certification.
+This is a code review and automated GTK/Xvfb smoke check, not a WCAG or assistive-technology certification.
 
-## Current support
+## Verified
 
-- All calendar and form controls are GTK widgets and can be reached by keyboard focus traversal.
-- Previous/next month and year navigation supports the left/right arrow keys when focus is outside an entry or selector.
-- The Today, copy, export, and navigation icon buttons have visible text or tooltips describing their actions.
-- Calendar day buttons show the full civil date and ISO week in their tooltip; selected dates also appear in a text details area.
-- Date details and conversion results are selectable text, so users can copy them without relying on color.
-- Theme choice follows the desktop by default and has light and dark options. Layout colors are supplied by GTK/libadwaita themes rather than hard-coded meaning colors.
-- The month and year pages use scrollable/adaptive containers; the window minimum is 600 by 460 logical pixels and the year page scrolls vertically.
+- Selected dates have a visible filled state and remain identified by the selected-date text panel; color is not the only indicator.
+- Navigation and header actions use GTK controls. Icon-only actions have descriptive tooltips, and the date grid provides full-date and ISO-week tooltips.
+- The Help page includes keyboard instructions, appearance settings, and resource links.
+- The `Left` and `Right` keys changed the displayed month in the Ubuntu GUI workflow. GTK/Xvfb integration checks also exercised the clipboard API.
+- Default GTK/libadwaita light styling rendered legible labels and controls in the reviewed Linux screenshots.
 
-## Known review work
+## Not yet verified
 
-- A Linux user should test keyboard-only operation and focus order with GTK Inspector and a screen reader such as Orca.
-- Calendar buttons currently present their day number as the visible label; date tooltips help disambiguate the full date, but a spoken-label review is still needed.
-- Check text scaling, high-contrast themes, RTL locales, and very narrow windows on supported desktop environments.
-- The desktop file chooser and clipboard should be tested in real Wayland/X11 sessions and under a sandbox portal. CI smoke tests do not prove portal behavior.
+- Tab and Shift+Tab focus order, Enter/Space activation, and keyboard operation of the native save dialog have not been systematically audited.
+- No Orca or other screen reader review was performed. Calendar cells expose their day number as the accessible label; spoken date context should be checked.
+- Dark and high-contrast themes, text scaling, RTL layout, narrow-window layouts, and a Wayland desktop session need additional review.
+- The save dialog and clipboard were exercised in Ubuntu's Xvfb session, but a real Flatpak portal sandbox was not built or tested.
 - No formal WCAG conformance evaluation has been performed.

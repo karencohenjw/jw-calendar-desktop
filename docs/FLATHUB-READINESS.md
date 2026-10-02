@@ -28,14 +28,14 @@ The GNOME runtime research snapshot is GNOME 50 as of 2026-10-02. Re-check the n
 | Developer-managed project | Owner and official site identified | Fail | Karen Cohen and jwcalendar.com are documented; repository is new | Human owner review, sustained maintenance, and clear reporting contact |
 | Icon | Original scalable vector plus 64/128/256 pixel PNG renders | Pass, pending Linux review | `data/icons/` | Review on light/dark desktops |
 | Brand colors | Blue and teal documented | Pass, pending review | AppStream branding entries and SVG palette | Confirm brand alignment with project site |
-| Screenshots | None supplied | Fail | No screenshots are fabricated | Capture genuine screenshots from the running Linux application after visual review |
+| Screenshots | Four genuine Linux captures exist locally; no public immutable URLs | Fail | Ubuntu 24.04.5 LTS / GTK 4.14.5 / libadwaita 1.5.0 captures are in local `data/screenshots/`; they are not in public `main` | Push screenshots, record the resulting public commit SHA, then add AppStream image URLs pinned to that SHA |
 | Name | JW Calendar | Pass, pending name review | AppStream, desktop entry, About window | Confirm no conflicting Flathub application ID/name at submission time |
 | Summary | Concise, functional description | Pass, pending review | “Browse calendars, inspect dates, and calculate date differences” | Human editorial review |
 | Description | Describes actual desktop behavior | Pass, pending review | AppStream description | Reconcile against shipped features before a stable release |
 | Desktop integration | Desktop entry, app ID, scalable icon included | Pass, pending install verification | `data/com.jwcalendar.JWCalendar.desktop`; icon path | Verify installation and launching from a Flatpak build |
 | Source and issue links | Public repository and issue tracker exist | Pass | AppStream and Snap metadata point to the public upstream repository | Re-check links during final public audit |
-| Permissions | No broad permissions planned | Pass, pending sandbox test | No network/background access; user-chosen export and clipboard only | Validate GTK file chooser portal and clipboard in a sandbox |
-| Release information | 0.1.0 source release published | Pass for source release; Fail for sustained history | `v0.1.0` points to the CI-verified release commit; all current history is from the initial setup on 2026-10-02 | Continue human maintenance and use; do not treat the new release as evidence of sustained history |
+| Permissions | No broad permissions planned; chooser open/cancel verified in Ubuntu GUI QA | Incomplete | GUI QA #14 displayed and cancelled GTK's native chooser; its save assertion failed, so CSV/HTML saves are not verified | Fix the GUI automation and pass real CSV and HTML save checks; later validate in a Flatpak portal sandbox |
+| Release information | Public `v0.1.0` source release published | Pass for source release; Fail for sustained history | `v0.1.0` points to the CI-verified release commit; all current history is from the initial setup on 2026-10-02. Local `0.1.1` edits are unpublished draft work | Continue human maintenance and use; do not treat same-day development as sustained history; publish a patch only after the draft and assets are verified |
 | Verification | Domain method identified, no token | Fail until owner action | `jwcalendar.com` is canonical homepage | Obtain actual token in Developer Portal and publish it; never fabricate one |
 | Offline operation | Core path and exports do not use network | Pass, pending runtime test | Source has no network client | Test with network unavailable in Linux environment |
 | Accessibility and localization | Basic labels and selectable details; locale names | Fail / incomplete | Uses system month/day names; visual review not available here | Review keyboard focus, screen reader labels, RTL/layout, and translation readiness |
@@ -45,8 +45,9 @@ The GNOME runtime research snapshot is GNOME 50 as of 2026-10-02. Re-check the n
 
 1. Human owner review of all AI-assisted source, assets, and metadata; keep the provenance disclosure accurate.
 2. Sustained development and meaningful maintenance history beyond the initial same-day setup. Do not manufacture commits, tags, releases, or contributors.
-3. Human visual review on Linux, genuine screenshots, keyboard and accessibility review, file chooser portal behavior, and offline operation. Automated GTK checks run under Xvfb but do not replace this review.
-4. Keep the stable source release and matching AppStream release record aligned; capture genuine Linux screenshots separately after visual review.
-5. Select and verify a currently supported runtime, build every dependency offline from pinned sources, and verify the app ID and domain through Flathub's then-current process.
-6. Confirm and publish a real private security contact route.
-7. A human maintainer prepares any eventual Flathub packaging and all submission communication. This repository has no final Flatpak manifest or submission PR.
+3. Pass the GUI export save checks: current public run #14 verified opening/cancelling the native chooser but failed while asserting that the CSV file had been written. The follow-up local automation now explicitly clicks the GTK Save button but has not run against Ubuntu yet.
+4. Push the four genuine Linux screenshots, pin AppStream URLs to their actual public commit SHA, and validate the release metadata. Current local `0.1.1` metadata is draft-only and its image links are not public.
+5. Human visual review on Linux, keyboard and accessibility review, file chooser portal behavior, and offline operation. Automated GTK checks under Xvfb do not replace this review.
+6. Select and verify a currently supported runtime, build every dependency offline from pinned sources, and verify the app ID and domain through Flathub's then-current process.
+7. Confirm and publish a real private security contact route.
+8. A human maintainer prepares any eventual Flathub packaging and all submission communication. This repository has no final Flatpak manifest or submission PR.

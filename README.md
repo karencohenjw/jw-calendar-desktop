@@ -18,7 +18,7 @@ The official project website is [jwcalendar.com](https://jwcalendar.com/). This 
 
 ## Status and platforms
 
-The first public release is [JW Calendar 0.1.0](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.0). Linux with GTK 4 and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted.
+The current public release is [JW Calendar 0.1.0](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.0). Linux with GTK 4 and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted. A 0.1.1 patch release is being prepared and is not yet published.
 
 The initial repository contents were created with substantial AI assistance; see [AI-ASSISTANCE.md](AI-ASSISTANCE.md). The project owner should review the code and continue maintaining the project before making further releases.
 

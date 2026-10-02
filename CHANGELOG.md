@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — 2026-10-02
+
+- Fix selected-date contrast in the GTK month view.
+- Add visible icons and explanatory text to the desktop navigation and Help page.
+- Fit the complete year overview in a 960 × 700 application window.
+- Add real Ubuntu Linux screenshots and AppStream screenshot metadata.
+- Expand automated Linux GUI checks for keyboard navigation and export chooser cancellation.
+
 ## 0.1.0 — 2026-10-02
 
 - Added a native GTK 4 and libadwaita application for offline Gregorian and Julian calendar browsing.
@@ -7,4 +15,4 @@
 - Added date details, calendar conversion, elapsed-day calculation, CSV export, and print-ready HTML export to the desktop app.
 - Added application metadata, launcher, multi-size icon renders, test suite, Linux CI, and strict-confinement Snap packaging.
 
-This is the first public release. GTK, metadata, Python package, and Snap build checks pass in CI. Native Linux desktop screenshots remain a human capture task and are not included.
+This was the first public development release. GTK, metadata, Python package, and Snap build checks passed in CI.

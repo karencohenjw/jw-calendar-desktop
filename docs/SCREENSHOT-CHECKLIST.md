@@ -1,18 +1,12 @@
-# Linux screenshot capture checklist
+# Linux screenshot evidence
 
-**Final store screenshots: HUMAN ACTION REQUIRED.** This checkout was developed and inspected on macOS. Do not use its window or a mockup as a Linux store screenshot.
+The four PNGs in `data/screenshots/` were captured from the running application on Ubuntu 24.04.5 LTS in GitHub Actions. The runner used Python 3.12.3, GTK 4.14.5, libadwaita 1.5.0, Xvfb, and Openbox. Each image is an unedited 960 × 700 capture of the application window, with no desktop or editing interface.
 
-On a supported Linux desktop, install the application from the source checkout and capture the actual application window at a comfortable readable size (at least 1280 × 800 pixels). Keep the desktop free of personal notifications and unrelated windows. Do not include terminal, browser, IDE, or editing UI. Use plausible dates and review every visible label before capture.
+The captures show:
 
-Required views:
+1. Month view with 2027-01-01 selected and Gregorian, Julian, ISO week, ordinal, Julian Day Number, and leap-year details.
+2. The full 2027 year overview, including all twelve month grids.
+3. A Gregorian-to-Julian conversion and a 364-day date difference.
+4. Help, appearance selection, keyboard hints, and project resource links.
 
-1. Month page showing the full month grid and selected-date details.
-2. Year page with all 12 month grids visible or clearly accessible by scrolling.
-3. Gregorian/Julian conversion page showing a valid conversion and elapsed-days result.
-4. Help page with appearance options and the project resource links.
-
-Optional view:
-
-5. The native save dialog opened from Export, only if the chooser does not expose personal paths or filenames.
-
-Save original PNG screenshots in `data/screenshots/` and include them in the tagged release. Add AppStream screenshot URLs only after the images are public at an immutable release-tag URL and each URL has been opened and checked. A human should then verify the captures at Flathub's current screenshot size and quality requirements.
+The images were reviewed at full size for readable text, complete content, and layout. The year capture shows all twelve months without clipping. They currently exist in the local checkout only: the screenshot commit has not been pushed, so no public immutable image URLs are available. The local AppStream `v0.1.1` screenshot entries are a draft and must be replaced with raw URLs pinned to the actual public screenshot commit SHA after it is pushed. The public repository still reports source release `v0.1.0`; no `v0.1.1` release has been published.
