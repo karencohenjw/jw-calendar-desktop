@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jw-calendar-desktop"
+version = "0.1.0.dev0"
+description = "An offline Gregorian and Julian calendar, date utility, and desktop application."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Karen Cohen" }]
+dependencies = ["jwcalendar-calendrical==0.1.0"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: X11 Applications :: GTK",
+  "Intended Audience :: End Users/Desktop",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Scheduling",
+]
+
+[project.urls]
+Homepage = "https://jwcalendar.com/"
+Source = "https://github.com/karencohenjw/jw-calendar-desktop"
+Issues = "https://github.com/karencohenjw/jw-calendar-desktop/issues"
+
+[project.scripts]
+jwcalendar = "jwcalendar_desktop.cli:main"
+jw-calendar-desktop = "jwcalendar_desktop.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/applications" = ["data/com.jwcalendar.JWCalendar.desktop"]
+"share/metainfo" = ["data/com.jwcalendar.JWCalendar.metainfo.xml"]
+"share/icons/hicolor/scalable/apps" = ["data/icons/com.jwcalendar.JWCalendar.svg"]
+"share/icons/hicolor/64x64/apps" = ["data/icons/hicolor/64x64/apps/com.jwcalendar.JWCalendar.png"]
+"share/icons/hicolor/128x128/apps" = ["data/icons/hicolor/128x128/apps/com.jwcalendar.JWCalendar.png"]
+"share/icons/hicolor/256x256/apps" = ["data/icons/hicolor/256x256/apps/com.jwcalendar.JWCalendar.png"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
