@@ -43,7 +43,7 @@ def key(*keys):
 def press_button_named(expected, activation="space"):
     for node in app_tree():
         if node.get_name() == expected:
-            node.query_component().grab_focus()
+            node.queryComponent().grabFocus()
             key(activation)
             return
     raise AssertionError(f"Missing accessible calendar button: {expected}")
