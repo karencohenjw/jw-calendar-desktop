@@ -391,17 +391,19 @@ class CalendarWindow(Adw.ApplicationWindow):
                     button.set_size_request(-1, 44)
                     button.set_tooltip_text(f"{iso_date(cell.date)} · {cell.iso_week or 'week —'}")
                     details = date_details(cell.date)
+                    is_selected = iso_date(cell.date) == self._selected_date
                     self._accessible_name(
                         button,
-                        f"{details['weekday']}, {iso_date(cell.date)}, {self._kind}, ISO week {cell.iso_week}",
+                        f"{'Selected date, ' if is_selected else ''}{details['weekday']}, "
+                        f"{iso_date(cell.date)}, {self._kind}, ISO week {cell.iso_week}",
                     )
                     button.update_state(
                         [Gtk.AccessibleState.SELECTED],
-                        [iso_date(cell.date) == self._selected_date],
+                        [is_selected],
                     )
                     if not cell.in_month:
                         button.add_css_class("dim-label")
-                    if iso_date(cell.date) == self._selected_date:
+                    if is_selected:
                         button.add_css_class("suggested-action")
                         button.remove_css_class("flat")
                     button.connect("clicked", self._select_date, cell.date)

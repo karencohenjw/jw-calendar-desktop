@@ -95,12 +95,10 @@ print("PASS: Space activates a keyboard-focused date and exposes its details")
 
 def selected_date():
     for node in app_tree():
-        try:
-            if node.get_state_set().contains(pyatspi.STATE_SELECTED) and "ISO week" in node.get_name():
-                return node.get_name().split(", ")[1]
-        except Exception:
-            pass
-    raise AssertionError("The selected calendar date is not exposed to AT-SPI")
+        name = node.get_name()
+        if name.startswith("Selected date, ") and "ISO week" in name:
+            return name.split(", ")[2]
+    raise AssertionError("The selected calendar date is not announced in its accessible name")
 
 
 original = selected_date()
