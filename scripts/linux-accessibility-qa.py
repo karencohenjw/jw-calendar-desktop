@@ -42,6 +42,12 @@ def key(*keys):
 
 
 tree = app_tree()
+date_controls = [
+    (node.get_role_name(), node.get_name())
+    for node in tree
+    if "ISO week" in node.get_name()
+]
+print(f"AT-SPI date-related controls: {date_controls[:12]}")
 assert any(node.get_name() == "Copy selected date" for node in tree)
 assert any(node.get_name() == "Export calendar" for node in tree)
 assert any(node.get_name() == "About JW Calendar" for node in tree)
@@ -59,7 +65,11 @@ for _ in range(45):
         try:
             if node.get_state_set().contains(pyatspi.STATE_FOCUSED):
                 focusable.add(node.get_name())
-                if ", " in node.get_name() and "ISO week" in node.get_name():
+                if (
+                    node.get_role_name() == "push button"
+                    and ", " in node.get_name()
+                    and "ISO week" in node.get_name()
+                ):
                     focused_date_name = node.get_name()
                     break
         except Exception:
@@ -67,7 +77,8 @@ for _ in range(45):
     if focused_date_name:
         break
 assert focused_date_name, (
-    f"Tab did not reach a named date cell; focused names were {sorted(focusable)}"
+    f"Tab did not reach a named date cell; focused names were {sorted(focusable)}; "
+    f"date controls were {date_controls[:12]}"
 )
 print("PASS: Tab reaches an announced calendar date")
 key("Shift+Tab")
