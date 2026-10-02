@@ -83,7 +83,7 @@ sleep 1
 scrot --focused --border "$artifact_dir/year-view.png"
 xdotool mousemove --sync "$((X + 532))" "$((Y + 30))" click 1
 sleep 1
-scrot --focused --border "$artifact_dir/convert-view.png"
+
 xdotool mousemove --sync "$((X + 385))" "$((Y + 145))" click 1
 sleep 1
 xdotool mousemove --sync 1240 860
