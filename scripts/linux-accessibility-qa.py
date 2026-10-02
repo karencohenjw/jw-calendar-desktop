@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Exercise the running GTK app's accessible tree and keyboard actions via AT-SPI."""
 
+import re
 import subprocess
 import time
 
@@ -78,9 +79,8 @@ assert any(
 key("Tab")
 print("PASS: Shift+Tab returns focus through the GTK control order")
 
-# Space activates a focused date, updates selected-date details, and keeps a
-# full date/calendar/ISO-week description on the selected grid cell.
-import re
+# Enter activates a focused date and updates selected-date details. The
+# focused cell has already been checked for its full date and ISO-week label.
 
 
 def focused_names():
@@ -92,7 +92,7 @@ def focused_names():
 
 assert focused_date_name in focused_names(), "Tab did not return to the same date cell"
 focused_date = focused_date_name.split(", ")[1]
-key("space")
+key("Return")
 def detail_date():
     for name in names():
         match = re.search(r"Gregorian: (\d{4}-\d{2}-\d{2})", name)
@@ -100,9 +100,12 @@ def detail_date():
             return match.group(1)
     raise AssertionError("Selected-date details are missing the Gregorian date")
 
-assert detail_date() == focused_date, "Space did not select the keyboard-focused date"
+selected_after_activation = detail_date()
+assert selected_after_activation == focused_date, (
+    f"Enter did not select the focused date: focused={focused_date}, selected={selected_after_activation}"
+)
 assert any("ISO week:" in name for name in names()), "Selected date details are missing ISO week"
-print("PASS: Space activates a keyboard-focused date and updates its accessible details")
+print("PASS: Enter activates a keyboard-focused date and updates its accessible details")
 
 
 original = detail_date()
