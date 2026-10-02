@@ -147,6 +147,7 @@ with path.open(encoding="utf-8", newline="") as stream:
     rows = list(csv.DictReader(stream))
 assert rows and any(row["date"] == "2027-01-01" for row in rows)
 assert rows[0]["weekday"] == "Sunday"
+Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
 
@@ -166,6 +167,7 @@ assert path.is_file(), f"HTML was not created at {path}"
 html = path.read_text(encoding="utf-8")
 assert "January 2027" in html
 assert not re.search(r"(?:src|href)=[\"']https?://", html, re.I)
+Path("artifacts/linux-gui-qa/january-2027.html").write_bytes(path.read_bytes())
 print("PASS: HTML saved, contains the calendar, and has no remote assets.")
 PY
 
