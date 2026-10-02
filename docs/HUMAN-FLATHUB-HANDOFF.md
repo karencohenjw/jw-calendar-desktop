@@ -1,0 +1,38 @@
+# Human Flathub packaging handoff
+
+This document is a factual checklist, not a Flatpak manifest. No Flatpak or dependency manifest is included in this project.
+
+## Application facts
+
+- Application ID: `com.jwcalendar.JWCalendar`
+- Upstream: https://github.com/karencohenjw/jw-calendar-desktop
+- Stable tag / commit / source archive URL / archive SHA-256: pending an actual stable release; do not invent these values.
+- License: MIT; see `LICENSE`.
+- CLI executable: `jwcalendar`
+- Desktop executable: `jw-calendar-desktop`
+- Desktop file: `com.jwcalendar.JWCalendar.desktop`
+- AppStream file: `com.jwcalendar.JWCalendar.metainfo.xml`
+- Installed icon name: `com.jwcalendar.JWCalendar` (scalable SVG). Size-test PNG renders are kept in `data/icons/` but are not installed by the Python package.
+- Python package: `jwcalendar-calendrical==0.1.0`, MIT; verified source archive and SHA-256 are in `DEPENDENCIES.md`.
+- Network permission for core behavior: not needed.
+- Broad home/host filesystem access: not needed. User-selected export destinations should use a portal.
+- Architectures tested in this initial work: macOS arm64 Python unit suite only; Linux CI has not completed yet. Do not imply a Linux architecture is tested until its CI run passes.
+
+## Runtime and source research snapshot — 2026-10-02
+
+Flathub's runtime documentation currently lists the GNOME runtime, and the current GNOME application platform listing is version 50. A new submission must re-check the newest hosted GNOME runtime and matching SDK immediately before packaging; this snapshot is not a permanent recommendation. GTK 4 and libadwaita are expected from a compatible GNOME runtime. The packager must verify whether that exact runtime provides a compatible Python interpreter and PyGObject; otherwise source and build the missing binding compatibly.
+
+Flathub's Python source workflow is commonly handled with `flatpak-pip-generator` from `flatpak-builder-tools`. A human must run the current supported tool, review all generated dependency sources, versions, licenses and hashes, and keep the generated output out of AI-authored project changes.
+
+## Portal behavior and permissions
+
+The application uses `Gtk.FileChooserNative` for user-directed file exports and normal GTK clipboard APIs. GTK can route its native chooser through XDG Desktop Portal in a sandbox, but this has not yet been verified in a real Linux sandbox. Do not grant broad filesystem or network access. Validate month navigation, conversion, date details, offline HTML/CSV generation, chooser save/cancel, and clipboard after packaging.
+
+## Human work before submission
+
+- Wait for real project history and evidence of maintenance/use; this repository begins with one initial development commit.
+- Complete Linux CI, desktop/AppStream validation, real release and clean public checkout.
+- Capture real Linux screenshots and publish them at immutable release URLs.
+- Re-check the current runtime, SDK, policies, package sources, licenses, and domain proof.
+- Have a human create and review all packaging files, run the offline build and linters, and perform local install/run checks.
+- Human must perform all Flathub submission and reviewer communication. This project task did not create or submit anything there.
