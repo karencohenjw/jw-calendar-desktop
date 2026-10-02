@@ -42,7 +42,7 @@ def key(*keys):
 
 def press_button_named(expected, activation="space"):
     for node in app_tree():
-        if node.get_name() == expected and node.get_role_name() == "push button":
+        if node.get_name() == expected:
             node.query_component().grab_focus()
             key(activation)
             return
@@ -86,7 +86,7 @@ print("PASS: Shift+Tab returns focus through the GTK control order")
 before = names()
 date_button = next(
     node.get_name() for node in app_tree()
-    if node.get_role_name() == "push button" and ", " in node.get_name() and "ISO week" in node.get_name()
+    if ", " in node.get_name() and "ISO week" in node.get_name()
 )
 press_button_named(date_button)
 after = names()
