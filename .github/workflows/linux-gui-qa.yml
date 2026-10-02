@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install a Linux display and desktop session
         run: |
           sudo apt-get update
@@ -29,12 +29,14 @@ jobs:
           .venv/bin/python -m pip install .
       - name: Launch and capture the actual GTK application
         run: |
+          mkdir -p artifacts/linux-gui-qa/home
+          HOME="$PWD/artifacts/linux-gui-qa/home" \
           PATH="$PWD/.venv/bin:$PATH" xvfb-run -a \
             --server-args="-screen 0 1280x900x24" \
             dbus-run-session -- bash scripts/linux-gui-qa.sh artifacts/linux-gui-qa
       - name: Upload diagnostic Linux GUI evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: jw-calendar-linux-gui-qa
           path: artifacts/linux-gui-qa/
