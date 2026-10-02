@@ -1,0 +1,47 @@
+name: jwcalendar
+title: JW Calendar
+version: '0.1.0-dev'
+summary: Browse calendars, inspect dates, and calculate date differences
+description: |
+  JW Calendar is an offline Gregorian and Julian calendar and date utility.
+  Browse month and year views, inspect weekdays, ordinals, ISO weeks, and
+  Julian Day Numbers, convert civil dates, and count elapsed days. The command
+  line also lists United States federal statutory and observed holidays.
+  The desktop application can export a month as CSV or print-ready HTML.
+license: MIT
+website: https://jwcalendar.com/
+source-code: https://github.com/karencohenjw/jw-calendar-desktop
+issues: https://github.com/karencohenjw/jw-calendar-desktop/issues
+icon: data/icons/com.jwcalendar.JWCalendar-snap.png
+base: core24
+confinement: strict
+grade: devel
+platforms:
+  amd64:
+
+slots:
+  jw-calendar:
+    interface: dbus
+    bus: session
+    name: com.jwcalendar.JWCalendar
+
+apps:
+  jw-calendar-desktop:
+    command: bin/jw-calendar-desktop
+    common-id: com.jwcalendar.JWCalendar
+    extensions: [gnome]
+    slots: [jw-calendar]
+    plugs: [desktop, desktop-legacy, gsettings, opengl, wayland, x11]
+  jwcalendar-cli:
+    command: bin/jwcalendar
+
+parts:
+  application:
+    plugin: python
+    source: .
+    stage-packages: [python3-gi]
+    organize:
+      share/applications/com.jwcalendar.JWCalendar.desktop: meta/gui/com.jwcalendar.JWCalendar.desktop
+    prime:
+      - -share/doc
+      - -share/man
