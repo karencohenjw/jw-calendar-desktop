@@ -491,7 +491,6 @@ class CalendarWindow(Adw.ApplicationWindow):
             "Export calendar", self, Gtk.FileChooserAction.SAVE, "Save", "Cancel"
         )
         chooser.set_current_name(filename)
-        chooser.set_do_overwrite_confirmation(True)
 
         def response(dialog, response_id):
             if response_id == Gtk.ResponseType.ACCEPT:
