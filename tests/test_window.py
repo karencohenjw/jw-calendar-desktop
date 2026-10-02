@@ -1,0 +1,81 @@
+import importlib.util
+import os
+import unittest
+from datetime import date
+
+
+HAS_GI = importlib.util.find_spec("gi") is not None
+HAS_DISPLAY = bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
+
+
+@unittest.skipUnless(HAS_GI and HAS_DISPLAY, "GTK display is not available")
+class WindowSmokeTests(unittest.TestCase):
+    def test_window_constructs_with_native_calendar_pages(self):
+        import gi
+
+        gi.require_version("Adw", "1")
+        gi.require_version("Gtk", "4.0")
+        from gi.repository import Adw, Gio
+
+        from jwcalendar_desktop.window import CalendarWindow
+        from jwcalendar_calendrical import CivilDate
+
+        app = Adw.Application(
+            application_id="com.jwcalendar.JWCalendar.Test",
+            flags=Gio.ApplicationFlags.NON_UNIQUE,
+        )
+        self.assertTrue(app.register(None))
+        window = CalendarWindow(app, "test")
+        self.assertEqual(window.get_title(), "JW Calendar")
+        self.assertEqual(window.stack.get_pages().get_n_items(), 4)
+        today = date.today()
+        self.assertEqual(window._month, today.month)
+        window._shift_month(1)
+        self.assertEqual(window._month, (today.month % 12) + 1)
+        self.assertEqual(window._year, today.year + (1 if today.month == 12 else 0))
+        window._year_spin.set_value(window._year + 1)
+        self.assertEqual(window._year, today.year + (1 if today.month == 12 else 0) + 1)
+        window._select_date(None, CivilDate(2028, 2, 29))
+        self.assertEqual(window._selected_date, "2028-02-29")
+        window.destroy()
+        app.quit()
+
+    def test_copy_uses_the_gtk_clipboard(self):
+        import gi
+
+        gi.require_version("Adw", "1")
+        gi.require_version("Gtk", "4.0")
+        from gi.repository import Adw, Gio, GLib, Gdk
+
+        from jwcalendar_desktop.window import CalendarWindow
+
+        app = Adw.Application(
+            application_id="com.jwcalendar.JWCalendar.ClipboardTest",
+            flags=Gio.ApplicationFlags.NON_UNIQUE,
+        )
+        self.assertTrue(app.register(None))
+        window = CalendarWindow(app, "test")
+        window._selected_date = "2027-01-01"
+        window._copy_date()
+        clipboard = Gdk.Display.get_default().get_clipboard()
+        loop = GLib.MainLoop()
+        result = {"text": None, "error": None}
+
+        def copied(source, async_result, _data):
+            try:
+                result["text"] = source.read_text_finish(async_result)
+            except Exception as error:
+                result["error"] = error
+            loop.quit()
+
+        clipboard.read_text_async(None, copied, None)
+        GLib.timeout_add_seconds(5, loop.quit)
+        loop.run()
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["text"], "2027-01-01")
+        window.destroy()
+        app.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()
