@@ -1,19 +1,17 @@
 # Accessibility review
 
-This is a code review and automated GTK/Xvfb smoke check, not a WCAG or assistive-technology certification.
+This records a real GTK/AT-SPI keyboard audit under Ubuntu/Xvfb. It is not a WCAG or full screen-reader certification.
 
-## Verified
+## Keyboard behavior
 
-- Selected dates have a visible filled state and remain identified by the selected-date text panel; color is not the only indicator.
-- Navigation and header actions use GTK controls. Icon-only actions have descriptive tooltips, and the date grid provides full-date and ISO-week tooltips.
-- The Help page includes keyboard instructions, appearance settings, and resource links.
-- The `Left` and `Right` keys changed the displayed month in the Ubuntu GUI workflow. GTK/Xvfb integration checks also exercised the clipboard API.
-- Default GTK/libadwaita light styling rendered legible labels and controls in the reviewed Linux screenshots.
+- Tab and Shift+Tab use GTK's normal focus order; calendar date buttons remain individual focusable controls. Enter or Space activates buttons. The native save dialog supports Escape to cancel.
+- In Month, Left/Right changes the month and Ctrl+Left/Ctrl+Right changes the year. Ctrl+1 through Ctrl+4 opens Month, Year, Convert, and Help.
+- Enter in the date conversion field runs Convert. Enter in the end-date field runs Calculate.
+- Copy, Export, About, previous month, and next month actions have explicit accessible names. Dropdowns and date inputs have names; date buttons announce weekday, full date, calendar, and ISO week. The selected date state is exposed as selected.
+- Changing a selected date preserves keyboard focus on its date button.
 
-## Not yet verified
+## Verification boundaries
 
-- Tab and Shift+Tab focus order, Enter/Space activation, and keyboard operation of the native save dialog have not been systematically audited.
-- No Orca or other screen reader review was performed. Calendar cells expose their day number as the accessible label; spoken date context should be checked.
-- Dark and high-contrast themes, text scaling, RTL layout, narrow-window layouts, and a Wayland desktop session need additional review.
-- The save dialog and clipboard were exercised in Ubuntu's Xvfb session, but a real Flatpak portal sandbox was not built or tested.
-- No formal WCAG conformance evaluation has been performed.
+The CI AT-SPI audit inspects the live Linux application, visits all four pages using keyboard shortcuts, tabs to a date, activates it with Space, and checks accessible names and date details. No reliable spoken Orca session was available in this headless runner, so spoken output is not claimed. A human should review speech, contrast/high-contrast themes, text scaling, RTL, narrow-window layouts, and Wayland behavior on a regular Linux desktop. No formal WCAG conformance evaluation has been performed.
+
+GTK 4.10's asynchronous `Gtk.FileDialog` returns a `GFile`; export writes through GIO. GTK's native file dialog uses `org.freedesktop.portal.FileChooser` when that portal is available. The separate non-Flatpak portal-readiness exercise is recorded in the workflow output and does not establish Flatpak sandbox behavior.

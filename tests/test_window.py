@@ -2,6 +2,8 @@ import importlib.util
 import os
 import unittest
 from datetime import date
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 
 HAS_GI = importlib.util.find_spec("gi") is not None
@@ -10,6 +12,37 @@ HAS_DISPLAY = bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"
 
 @unittest.skipUnless(HAS_GI and HAS_DISPLAY, "GTK display is not available")
 class WindowSmokeTests(unittest.TestCase):
+    def test_export_writes_through_gio_to_the_selected_file(self):
+        import gi
+
+        gi.require_version("Adw", "1")
+        gi.require_version("Gtk", "4.0")
+        from gi.repository import Adw, Gio, GLib
+
+        from jwcalendar_desktop.window import CalendarWindow
+
+        app = Adw.Application(
+            application_id="com.jwcalendar.JWCalendar.ExportTest",
+            flags=Gio.ApplicationFlags.NON_UNIQUE,
+        )
+        self.assertTrue(app.register(None))
+        window = CalendarWindow(app, "test")
+        with TemporaryDirectory() as directory:
+            path = Path(directory, "calendar.csv")
+            loop = GLib.MainLoop()
+            errors = []
+            window._write_export(
+                Gio.File.new_for_path(str(path)),
+                "date,weekday\n2027-01-01,Fri\n",
+                lambda error: (errors.append(error), loop.quit()),
+            )
+            GLib.timeout_add_seconds(5, loop.quit)
+            loop.run()
+            self.assertEqual(errors, [None])
+            self.assertEqual(path.read_text(encoding="utf-8"), "date,weekday\n2027-01-01,Fri\n")
+        window.destroy()
+        app.quit()
+
     def test_window_constructs_with_native_calendar_pages(self):
         import gi
 

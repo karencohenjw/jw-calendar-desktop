@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=JW Calendar
-Comment=Browse calendars, inspect dates, and calculate date differences
+Comment=Browse dates and calendars
 Exec=jw-calendar-desktop
 Icon=com.jwcalendar.JWCalendar
 Terminal=false

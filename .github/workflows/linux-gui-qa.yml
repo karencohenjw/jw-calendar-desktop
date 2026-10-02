@@ -17,9 +17,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes \
-            adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core \
+            adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core gnome-screenshot \
             gir1.2-adw-1 gir1.2-gtk-4.0 libadwaita-1-dev libgtk-4-dev \
-            openbox picom pkg-config python3-gi scrot wmctrl xdg-desktop-portal \
+            openbox picom pkg-config python3-gi python3-pyatspi wmctrl xdg-desktop-portal \
             xdg-desktop-portal-gtk xdotool xvfb
       - name: Record versions and install the clean checkout
         run: |
@@ -38,7 +38,25 @@ jobs:
           HOME="$PWD/artifacts/linux-gui-qa/home" \
           PATH="$PWD/.venv/bin:$PATH" xvfb-run -a \
             --server-args="-screen 0 1280x900x24" \
-            dbus-run-session -- bash scripts/linux-gui-qa.sh artifacts/linux-gui-qa
+            dbus-run-session -- env GDK_DEBUG=portals JW_PORTAL_QA=1 \
+              bash scripts/linux-gui-qa.sh artifacts/linux-gui-qa
+      - name: Validate AppStream with the current Flathub linter
+        run: |
+          docker run --rm -v "$PWD:/mnt" ghcr.io/flathub/flatpak-builder-lint:latest \
+            appstream /mnt/data/com.jwcalendar.JWCalendar.metainfo.xml
+      - name: Run the actual GTK application with networking disabled
+        run: |
+          sudo unshare --net -- bash -c '
+            ip link set lo up
+            export XDG_RUNTIME_DIR="$PWD/artifacts/linux-offline-qa/runtime"
+            export XDG_CURRENT_DESKTOP=GNOME
+            export HOME="$PWD/artifacts/linux-offline-qa/home"
+            export PATH="$PWD/.venv/bin:$PATH"
+            mkdir -p "$XDG_RUNTIME_DIR" "$HOME"
+            chmod 700 "$XDG_RUNTIME_DIR"
+            dbus-run-session -- xvfb-run -a --server-args="-screen 0 1280x900x24" \
+              bash scripts/linux-gui-qa.sh artifacts/linux-offline-qa
+          '
       - name: Upload diagnostic Linux GUI evidence
         if: always()
         uses: actions/upload-artifact@v6

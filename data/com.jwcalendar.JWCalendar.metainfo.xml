@@ -24,6 +24,11 @@
     <category>Office</category>
     <category>Utility</category>
   </categories>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <internet>offline-only</internet>
+  </supports>
   <keywords>
     <keyword>calendar</keyword>
     <keyword>Gregorian</keyword>
@@ -33,19 +38,19 @@
   </keywords>
   <content_rating type="oars-1.1"/>
   <screenshots>
-    <screenshot type="default">
+    <screenshot type="default" xml:lang="en">
       <caption>Browse a month and inspect selected-date details</caption>
       <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/month-view.png</image>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <caption>See all twelve months in a compact year view</caption>
       <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/year-view.png</image>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <caption>Convert Gregorian and Julian dates and calculate elapsed days</caption>
       <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/convert-view.png</image>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <caption>Choose an appearance and open calendar references</caption>
       <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/help-view.png</image>
     </screenshot>
@@ -58,7 +63,7 @@
     </release>
     <release version="0.1.0" date="2026-10-02" type="stable">
       <description>
-        <p>First public development release with Gregorian and Julian calendar views, date conversion, date details, elapsed-day calculations, CSV and HTML export, and a command-line interface.</p>
+        <p>First public release with Gregorian and Julian calendar views, date conversion, date details, elapsed-day calculations, CSV and HTML export, and a command-line interface.</p>
       </description>
     </release>
   </releases>

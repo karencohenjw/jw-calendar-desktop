@@ -18,7 +18,7 @@ The dependency is not expected to be included in a GNOME runtime and must be pro
 |---|---|---|---|---|
 | Python | 3.10+ | PSF-2.0 | [python.org](https://www.python.org/) | Common GNOME base component; verify the selected runtime. |
 | PyGObject (`gi`) | GTK bindings supplied by the OS | LGPL-2.1-or-later | [GNOME PyGObject](https://gitlab.gnome.org/GNOME/pygobject) | Availability varies by runtime. The Snap uses the core24 `python3-gi` package plus the GNOME extension. A Flatpak packager must verify or build a compatible binding. |
-| GTK | GTK 4; Ubuntu 24.04 CI uses GTK 4.14 series | LGPL-2.1-or-later | [GTK](https://gitlab.gnome.org/GNOME/gtk) | GTK 4 is supplied by the GNOME platform runtime. |
+| GTK | GTK 4.10+; Ubuntu 24.04 CI uses GTK 4.14 series | LGPL-2.1-or-later | [GTK](https://gitlab.gnome.org/GNOME/gtk) | GTK 4.10 provides the asynchronous `Gtk.FileDialog` API used for export. GTK 4 is supplied by the GNOME platform runtime. |
 | libadwaita | 1.4+ | LGPL-2.1-or-later | [libadwaita](https://gitlab.gnome.org/GNOME/libadwaita) | Supplied by a compatible GNOME runtime. |
 | GLib / GIO | OS/runtime version | LGPL-2.1-or-later | [GLib](https://gitlab.gnome.org/GNOME/glib) | Supplied by GTK/GNOME runtime. |
 

@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import calendar
 import locale
-from pathlib import Path
 from datetime import date
 
 import gi
 
 gi.require_version("Adw", "1")
 gi.require_version("Gtk", "4.0")
-from gi.repository import Adw, Gdk, Gio, Gtk
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 from .core import (
     CalendarKind,
@@ -81,15 +80,18 @@ class CalendarWindow(Adw.ApplicationWindow):
         toolbar.add_top_bar(header)
 
         copy_button = Gtk.Button(icon_name="edit-copy-symbolic", tooltip_text="Copy selected date")
+        self._accessible_name(copy_button, "Copy selected date")
         copy_button.connect("clicked", self._copy_date)
         header.pack_start(copy_button)
         export_button = Gtk.MenuButton(icon_name="document-save-symbolic", tooltip_text="Export")
+        self._accessible_name(export_button, "Export calendar")
         export_menu = Gio.Menu()
         export_menu.append("Print-ready HTML…", "win.export-html")
         export_menu.append("Calendar CSV…", "win.export-csv")
         export_button.set_menu_model(export_menu)
         header.pack_end(export_button)
         about_button = Gtk.Button(icon_name="help-about-symbolic", tooltip_text="About JW Calendar")
+        self._accessible_name(about_button, "About JW Calendar")
         about_button.connect("clicked", self._show_about)
         header.pack_end(about_button)
 
@@ -100,6 +102,9 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._build_year_page()
         self._build_converter_page()
         self._build_help_page()
+        for number, page in enumerate(("month", "year", "convert", "help"), start=1):
+            self._add_action(f"show-{page}", lambda page=page: self.stack.set_visible_child_name(page))
+            self.get_application().set_accels_for_action(f"win.show-{page}", [f"<Control>{number}"])
         toolbar.set_content(self.stack)
         self.set_content(toolbar)
 
@@ -136,6 +141,8 @@ class CalendarWindow(Adw.ApplicationWindow):
         navigation = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         back = Gtk.Button(icon_name="go-previous-symbolic", tooltip_text="Previous month")
         forward = Gtk.Button(icon_name="go-next-symbolic", tooltip_text="Next month")
+        self._accessible_name(back, "Previous month")
+        self._accessible_name(forward, "Next month")
         back.connect("clicked", lambda *_: self._shift_month(-1))
         forward.connect("clicked", lambda *_: self._shift_month(1))
         navigation.append(back)
@@ -172,10 +179,16 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._week_dropdown.connect("notify::selected", self._month_control_changed)
 
     @staticmethod
+    def _accessible_name(widget: Gtk.Widget, name: str) -> None:
+        widget.update_property([Gtk.AccessibleProperty.LABEL], [name])
+
+    @staticmethod
     def _labeled_control(title: str, widget: Gtk.Widget) -> Gtk.Box:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         label = Gtk.Label(label=title, xalign=0)
         label.add_css_class("caption")
+        CalendarWindow._accessible_name(widget, title)
+        label.set_mnemonic_widget(widget)
         box.append(label)
         box.append(widget)
         return box
@@ -216,6 +229,9 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._converter_entry = Gtk.Entry(placeholder_text="YYYY-MM-DD")
         self._converter_entry.set_text("2027-01-01")
         self._converter_kind = Gtk.DropDown.new_from_strings(["Gregorian", "Julian"])
+        self._accessible_name(self._converter_entry, "Date to convert, YYYY-MM-DD")
+        self._accessible_name(self._converter_kind, "Conversion source calendar")
+        self._converter_entry.connect("activate", self._convert_date)
         convert_button = Gtk.Button(label="Convert")
         convert_button.add_css_class("suggested-action")
         convert_button.connect("clicked", self._convert_date)
@@ -237,6 +253,10 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._difference_end = Gtk.Entry(placeholder_text="End: YYYY-MM-DD")
         self._difference_end.set_text("2027-12-31")
         self._difference_kind = Gtk.DropDown.new_from_strings(["Gregorian", "Julian"])
+        self._accessible_name(self._difference_start, "Start date, YYYY-MM-DD")
+        self._accessible_name(self._difference_end, "End date, YYYY-MM-DD")
+        self._accessible_name(self._difference_kind, "Date difference calendar")
+        self._difference_end.connect("activate", self._calculate_difference)
         diff_button = Gtk.Button(label="Calculate")
         diff_button.connect("clicked", self._calculate_difference)
         diff_row.append(self._difference_start)
@@ -281,7 +301,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._appearance_dropdown.connect("notify::selected", self._appearance_changed)
         page.append(appearance)
         help_row = Gtk.Label(
-            label="Keyboard: ← / → changes month; Ctrl+← / Ctrl+→ changes year.\n"
+            label="In Month: ← / → changes month; Ctrl+← / Ctrl+→ changes year. Ctrl+1–4 opens Month, Year, Convert, Help.\n"
             "Use Export to save the current month as a print-ready HTML page or CSV file.",
             xalign=0,
             justify=Gtk.Justification.LEFT,
@@ -370,6 +390,15 @@ class CalendarWindow(Adw.ApplicationWindow):
                     button.set_hexpand(True)
                     button.set_size_request(-1, 44)
                     button.set_tooltip_text(f"{iso_date(cell.date)} · {cell.iso_week or 'week —'}")
+                    details = date_details(cell.date)
+                    self._accessible_name(
+                        button,
+                        f"{details['weekday']}, {iso_date(cell.date)}, {self._kind}, ISO week {cell.iso_week}",
+                    )
+                    button.update_state(
+                        [Gtk.AccessibleState.SELECTED],
+                        [iso_date(cell.date) == self._selected_date],
+                    )
                     if not cell.in_month:
                         button.add_css_class("dim-label")
                     if iso_date(cell.date) == self._selected_date:
@@ -422,9 +451,24 @@ class CalendarWindow(Adw.ApplicationWindow):
             self._detail_label.set_text("Select a date within the displayed month.")
 
     def _select_date(self, _button: Gtk.Button, value) -> None:
+        restore_focus = _button is not None and _button.has_focus()
         self._selected_date = iso_date(value)
+        self._year, self._month = value.year, value.month
+        self._syncing_controls = True
+        self._month_spin.set_value(self._year)
+        self._month_dropdown.set_selected(self._month - 1)
+        self._year_spin.set_value(self._year)
+        self._syncing_controls = False
         self._render_month()
+        self._render_year()
         self._render_details()
+        if restore_focus:
+            child = self._calendar_grid.get_first_child()
+            while child is not None:
+                if isinstance(child, Gtk.Button) and child.has_css_class("suggested-action"):
+                    child.grab_focus()
+                    break
+                child = child.get_next_sibling()
 
     def _shift_month(self, amount: int) -> None:
         index = self._year * 12 + self._month - 1 + amount
@@ -487,25 +531,49 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._save_file(content, f"{calendar.month_name[self._month].lower()}-{self._year}.csv")
 
     def _save_file(self, content: str, filename: str) -> None:
-        chooser = Gtk.FileChooserNative.new(
-            "Export calendar", self, Gtk.FileChooserAction.SAVE, "Save", "Cancel"
-        )
-        chooser.set_current_name(filename)
-        self._active_chooser = chooser
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title("Export calendar")
+        dialog.set_initial_name(filename)
+        self._active_chooser = dialog
 
-        def response(dialog, response_id):
+        def selected(source, result, _user_data=None):
             try:
-                if response_id == Gtk.ResponseType.ACCEPT:
-                    file = dialog.get_file()
-                    path = file.get_path() if file else None
-                    if path:
-                        Path(path).write_text(content, encoding="utf-8")
-            finally:
-                dialog.destroy()
+                file = source.save_finish(result)
+            except GLib.Error as error:
                 self._active_chooser = None
+                if error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.CANCELLED):
+                    return
+                message = Adw.MessageDialog.new(self, "Could not choose export location", error.message)
+                message.add_response("close", "Close")
+                message.set_default_response("close")
+                message.set_close_response("close")
+                message.present()
+                return
+            self._active_chooser = None
+            self._write_export(file, content)
 
-        chooser.connect("response", response)
-        chooser.show()
+        dialog.save(self, None, selected)
+
+    def _write_export(self, file: Gio.File, content: str, completed=None) -> None:
+        def saved(source, result, _user_data=None):
+            error = None
+            try:
+                source.replace_contents_finish(result)
+            except GLib.Error as caught:
+                error = caught
+                if completed is None:
+                    message = Adw.MessageDialog.new(self, "Could not save calendar", caught.message)
+                    message.add_response("close", "Close")
+                    message.set_default_response("close")
+                    message.set_close_response("close")
+                    message.present()
+            if completed:
+                completed(error)
+
+        file.replace_contents_bytes_async(
+            GLib.Bytes.new(content.encode("utf-8")), None, False,
+            Gio.FileCreateFlags.NONE, None, saved,
+        )
 
     def _show_about(self, *_args) -> None:
         about = Adw.AboutWindow(
@@ -522,8 +590,12 @@ class CalendarWindow(Adw.ApplicationWindow):
 
     def _on_key_pressed(self, _controller, keyval, _keycode, state) -> bool:
         focus = self.get_focus()
-        if isinstance(focus, (Gtk.Entry, Gtk.SpinButton, Gtk.DropDown)):
+        if self.stack.get_visible_child_name() != "month":
             return False
+        while focus is not None and focus is not self:
+            if isinstance(focus, (Gtk.Editable, Gtk.SpinButton, Gtk.DropDown)):
+                return False
+            focus = focus.get_parent()
         if keyval == Gdk.KEY_Left:
             self._shift_month(-12 if state & Gdk.ModifierType.CONTROL_MASK else -1)
             return True

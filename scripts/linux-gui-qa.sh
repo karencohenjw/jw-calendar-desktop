@@ -12,6 +12,7 @@ window_manager_pid=$!
 picom --backend xrender --no-vsync >"$artifact_dir/picom.log" 2>&1 &
 compositor_pid=$!
 app_pid=""
+portal_monitor_pid=""
 
 cleanup() {
   if [[ -n "$app_pid" ]] && kill -0 "$app_pid" 2>/dev/null; then
@@ -19,10 +20,20 @@ cleanup() {
     wait "$app_pid" || true
   fi
   kill "$compositor_pid" "$window_manager_pid" 2>/dev/null || true
+  if [[ -n "$portal_monitor_pid" ]]; then
+    kill "$portal_monitor_pid" 2>/dev/null || true
+    wait "$portal_monitor_pid" 2>/dev/null || true
+  fi
 }
 trap cleanup EXIT
 
 sleep 2
+if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
+  dbus-monitor --session "interface='org.freedesktop.portal.FileChooser'" \
+    >"$artifact_dir/portal-dbus.log" 2>&1 &
+  portal_monitor_pid=$!
+  sleep 1
+fi
 {
   lsb_release -ds
   /usr/bin/python3 --version
@@ -53,9 +64,11 @@ if [[ -z "$window_id" ]]; then
   exit 1
 fi
 
-wmctrl -ir "$window_id" -e 0,40,40,960,700
+wmctrl -ir "$window_id" -e 0,40,40,930,660
 wmctrl -ia "$window_id"
 sleep 2
+
+python3 scripts/linux-accessibility-qa.py | tee "$artifact_dir/accessibility.txt"
 
 # Reset to today, then use the app-level arrow keys to reach January 2027.
 # move from the runner's current month to January 2027 using real key events.
@@ -77,10 +90,10 @@ fi
 sleep 1
 xdotool mousemove --sync 1240 860
 sleep 1
-scrot --focused --border "$artifact_dir/month-view.png"
+gnome-screenshot --window --file="$artifact_dir/month-view.png"
 xdotool mousemove --sync "$((X + 428))" "$((Y + 30))" click 1
 sleep 1
-scrot --focused --border "$artifact_dir/year-view.png"
+gnome-screenshot --window --file="$artifact_dir/year-view.png"
 xdotool mousemove --sync "$((X + 532))" "$((Y + 30))" click 1
 sleep 1
 
@@ -88,10 +101,10 @@ xdotool mousemove --sync "$((X + 385))" "$((Y + 145))" click 1
 sleep 1
 xdotool mousemove --sync 1240 860
 sleep 1
-scrot --focused --border "$artifact_dir/convert-view.png"
+gnome-screenshot --window --file="$artifact_dir/convert-view.png"
 xdotool mousemove --sync "$((X + 628))" "$((Y + 30))" click 1
 sleep 1
-scrot --focused --border "$artifact_dir/help-view.png"
+gnome-screenshot --window --file="$artifact_dir/help-view.png"
 
 wmctrl -lG | tee "$artifact_dir/windows.txt"
 if [[ ! -s "$artifact_dir/month-view.png" ]]; then
@@ -211,3 +224,13 @@ if ! kill -0 "$app_pid" 2>/dev/null; then
 fi
 
 echo "PASS: JW Calendar launched as a visible Linux GTK window." | tee "$artifact_dir/result.txt"
+if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
+  sleep 1
+  if ! rg -q 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
+    echo "GTK portal readiness failed: the FileChooser portal was not called." >&2
+    cat "$artifact_dir/application.log" >&2
+    exit 1
+  fi
+  echo "PASS: GTK called the real FileChooser portal for save/export." \
+    | tee "$artifact_dir/portal-result.txt"
+fi
