@@ -18,8 +18,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes \
             adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core \
-            gir1.2-adw-1 gir1.2-gtk-4.0 openbox picom python3-gi \
-            scrot wmctrl xdotool xvfb
+            gir1.2-adw-1 gir1.2-gtk-4.0 libadwaita-1-dev libgtk-4-dev \
+            openbox picom pkg-config python3-gi scrot wmctrl xdotool xvfb
       - name: Record versions and install the clean checkout
         run: |
           lsb_release -ds
@@ -29,7 +29,6 @@ jobs:
           .venv/bin/python -m pip install .
       - name: Launch and capture the actual GTK application
         run: |
-          .venv/bin/python -m pip install build
           PATH="$PWD/.venv/bin:$PATH" xvfb-run -a \
             --server-args="-screen 0 1280x900x24" \
             dbus-run-session -- bash scripts/linux-gui-qa.sh artifacts/linux-gui-qa
