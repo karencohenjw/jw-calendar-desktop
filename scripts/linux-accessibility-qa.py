@@ -40,15 +40,6 @@ def key(*keys):
     time.sleep(0.3)
 
 
-def press_button_named(expected, activation="space"):
-    for node in app_tree():
-        if node.get_name() == expected:
-            node.queryComponent().grabFocus()
-            key(activation)
-            return
-    raise AssertionError(f"Missing accessible calendar button: {expected}")
-
-
 tree = app_tree()
 assert any(node.get_name() == "Copy selected date" for node in tree)
 assert any(node.get_name() == "Export calendar" for node in tree)
@@ -83,12 +74,21 @@ print("PASS: Shift+Tab returns focus through the GTK control order")
 
 # Space activates a focused date, updates selected-date details, and keeps a
 # full date/calendar/ISO-week description on the selected grid cell.
-before = names()
-date_button = next(
-    node.get_name() for node in app_tree()
-    if ", " in node.get_name() and "ISO week" in node.get_name()
-)
-press_button_named(date_button)
+def focused_names():
+    return {
+        node.get_name() for node in app_tree()
+        if node.get_state_set().contains(pyatspi.STATE_FOCUSED) and node.get_name()
+    }
+
+
+focused_date = False
+for _ in range(45):
+    if any(", " in name and "ISO week" in name for name in focused_names()):
+        focused_date = True
+        break
+    key("Tab")
+assert focused_date, "Keyboard focus did not reach a named date cell"
+key("space")
 after = names()
 assert any("ISO week:" in name for name in after), "Selected date details are missing ISO week"
 print("PASS: Space activates a keyboard-focused date and exposes its details")
