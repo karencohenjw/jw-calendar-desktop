@@ -37,6 +37,14 @@ class WindowSmokeTests(unittest.TestCase):
         self.assertEqual(window._year, today.year + (1 if today.month == 12 else 0) + 1)
         window._select_date(None, CivilDate(2028, 2, 29))
         self.assertEqual(window._selected_date, "2028-02-29")
+        selected_button = window._calendar_grid.get_first_child()
+        while selected_button is not None:
+            if selected_button.get_tooltip_text() == "2028-02-29 · 2028-W09":
+                break
+            selected_button = selected_button.get_next_sibling()
+        self.assertIsNotNone(selected_button)
+        self.assertTrue(selected_button.has_css_class("suggested-action"))
+        self.assertFalse(selected_button.has_css_class("flat"))
         window.destroy()
         app.quit()
 
