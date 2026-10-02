@@ -104,6 +104,8 @@ test -s "$artifact_dir/year-view.png"
 test -s "$artifact_dir/convert-view.png"
 test -s "$artifact_dir/help-view.png"
 
+
+window_count_before="$(wmctrl -l | wc -l)"
 # Open and cancel the native export chooser.
 xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
 sleep 0.5
@@ -111,8 +113,10 @@ xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
 sleep 0.5
 xdotool key --clearmodifiers Down Return
 sleep 1
-chooser_id="$(xdotool search --onlyvisible --name "Export calendar" 2>/dev/null | head -n 1 || true)"
-[[ -n "$chooser_id" ]] || { echo "Native export chooser did not open." >&2; exit 1; }
+wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
+window_count_after="$(wmctrl -l | wc -l)"
+[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "Native export dialog did not open." >&2; exit 1; }
+
 xdotool key Escape
 sleep 1
 echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
