@@ -19,7 +19,8 @@ jobs:
           sudo apt-get install --yes \
             adwaita-icon-theme at-spi2-core dbus-x11 fonts-dejavu-core \
             gir1.2-adw-1 gir1.2-gtk-4.0 libadwaita-1-dev libgtk-4-dev \
-            openbox picom pkg-config python3-gi scrot wmctrl xdotool xvfb
+            openbox picom pkg-config python3-gi scrot wmctrl xdg-desktop-portal \
+            xdg-desktop-portal-gtk xdotool xvfb
       - name: Record versions and install the clean checkout
         run: |
           lsb_release -ds
@@ -30,6 +31,10 @@ jobs:
       - name: Launch and capture the actual GTK application
         run: |
           mkdir -p artifacts/linux-gui-qa/home
+          mkdir -p artifacts/linux-gui-qa/runtime
+          chmod 700 artifacts/linux-gui-qa/runtime
+          XDG_RUNTIME_DIR="$PWD/artifacts/linux-gui-qa/runtime" \
+          XDG_CURRENT_DESKTOP=GNOME \
           HOME="$PWD/artifacts/linux-gui-qa/home" \
           PATH="$PWD/.venv/bin:$PATH" xvfb-run -a \
             --server-args="-screen 0 1280x900x24" \
