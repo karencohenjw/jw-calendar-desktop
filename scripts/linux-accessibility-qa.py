@@ -36,6 +36,10 @@ def names():
     return {node.get_name() for node in app_tree() if node.get_name()}
 
 
+def descriptions():
+    return {node.get_description() for node in app_tree() if node.get_description()}
+
+
 def key(*keys):
     subprocess.run(["xdotool", "key", "--clearmodifiers", *keys], check=True)
     time.sleep(0.3)
@@ -136,7 +140,7 @@ key("Right")
 print("PASS: Ctrl+Left/Right changes the year; Left/Right changes the month")
 
 key("ctrl+3")
-conversion = names()
+conversion = names() | descriptions()
 for expected in (
     "Date to convert, YYYY-MM-DD", "Conversion source calendar",
     "Start date, YYYY-MM-DD", "End date, YYYY-MM-DD", "Date difference calendar",

@@ -183,6 +183,10 @@ class CalendarWindow(Adw.ApplicationWindow):
         widget.update_property([Gtk.AccessibleProperty.LABEL], [name])
 
     @staticmethod
+    def _accessible_description(widget: Gtk.Widget, description: str) -> None:
+        widget.update_property([Gtk.AccessibleProperty.DESCRIPTION], [description])
+
+    @staticmethod
     def _labeled_control(title: str, widget: Gtk.Widget) -> Gtk.Box:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         label = Gtk.Label(label=title, xalign=0)
@@ -231,6 +235,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._converter_kind = Gtk.DropDown.new_from_strings(["Gregorian", "Julian"])
         self._accessible_name(self._converter_entry, "Date to convert, YYYY-MM-DD")
         self._accessible_name(self._converter_kind, "Conversion source calendar")
+        self._accessible_description(self._converter_kind, "Conversion source calendar")
         self._converter_entry.connect("activate", self._convert_date)
         convert_button = Gtk.Button(label="Convert")
         convert_button.add_css_class("suggested-action")
@@ -256,6 +261,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         self._accessible_name(self._difference_start, "Start date, YYYY-MM-DD")
         self._accessible_name(self._difference_end, "End date, YYYY-MM-DD")
         self._accessible_name(self._difference_kind, "Date difference calendar")
+        self._accessible_description(self._difference_kind, "Date difference calendar")
         self._difference_end.connect("activate", self._calculate_difference)
         diff_button = Gtk.Button(label="Calculate")
         diff_button.connect("clicked", self._calculate_difference)
