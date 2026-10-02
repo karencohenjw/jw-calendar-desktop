@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.jwcalendar.JWCalendar</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>JW Calendar</name>
+  <summary>Browse calendars, inspect dates, and calculate date differences</summary>
+  <description>
+    <p>JW Calendar is a desktop calendar reference for exploring civil dates without an internet connection.</p>
+    <p>Browse Gregorian and Julian month and year layouts, inspect weekday, ordinal day, ISO week and Julian Day Number, convert between the two calendar systems, and calculate elapsed days between dates.</p>
+    <p>Export a month as a print-ready HTML page or a CSV file. The application does not require an account or network access.</p>
+    <p>United States federal statutory and observed holidays are also available from the command line. This listing does not include state, local, or one-off closures.</p>
+  </description>
+  <launchable type="desktop-id">com.jwcalendar.JWCalendar.desktop</launchable>
+  <url type="homepage">https://jwcalendar.com/</url>
+  <url type="vcs-browser">https://github.com/karencohenjw/jw-calendar-desktop</url>
+  <url type="bugtracker">https://github.com/karencohenjw/jw-calendar-desktop/issues</url>
+  <developer id="com.jwcalendar"><name>Karen Cohen</name></developer>
+  <provides>
+    <binary>jwcalendar</binary>
+    <binary>jw-calendar-desktop</binary>
+  </provides>
+  <categories>
+    <category>Office</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>calendar</keyword>
+    <keyword>Gregorian</keyword>
+    <keyword>Julian</keyword>
+    <keyword>date</keyword>
+    <keyword>ISO week</keyword>
+  </keywords>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#09245f</color>
+    <color type="primary" scheme_preference="dark">#12c9e9</color>
+  </branding>
+  <icon type="stock">com.jwcalendar.JWCalendar</icon>
+</component>

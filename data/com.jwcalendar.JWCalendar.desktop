@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=JW Calendar
+Comment=Browse calendars, inspect dates, and calculate date differences
+Exec=jw-calendar-desktop
+Icon=com.jwcalendar.JWCalendar
+Terminal=false
+Categories=Office;Utility;Calendar;
+Keywords=calendar;Gregorian;Julian;date;ISO week;
+StartupNotify=true
