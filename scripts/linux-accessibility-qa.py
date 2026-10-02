@@ -94,11 +94,17 @@ assert any("ISO week:" in name for name in after), "Selected date details are mi
 print("PASS: Space activates a keyboard-focused date and exposes its details")
 
 def selected_date():
+    date_names = []
     for node in app_tree():
         name = node.get_name()
+        if "ISO week" in name:
+            date_names.append(name)
         if name.startswith("Selected date, ") and "ISO week" in name:
             return name.split(", ")[2]
-    raise AssertionError("The selected calendar date is not announced in its accessible name")
+    raise AssertionError(
+        "The selected calendar date is not announced in its accessible name; "
+        f"date labels were {date_names[:8]}"
+    )
 
 
 original = selected_date()
