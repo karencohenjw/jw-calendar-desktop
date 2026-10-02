@@ -10,12 +10,12 @@ import pyatspi
 def descendants(root):
     yield root
     try:
-        children = root.childCount
+        children = root.get_child_count()
     except Exception:
         return
     for index in range(children):
         try:
-            child = root.getChildAtIndex(index)
+            child = root.get_child_at_index(index)
         except Exception:
             continue
         yield from descendants(child)
@@ -25,14 +25,14 @@ def app_tree():
     desktop = pyatspi.Registry.getDesktop(0)
     for _ in range(40):
         for app in descendants(desktop):
-            if app.getName() == "JW Calendar":
+            if app.get_name() == "JW Calendar":
                 return list(descendants(app))
         time.sleep(0.25)
     raise AssertionError("JW Calendar did not appear in the AT-SPI desktop tree")
 
 
 def names():
-    return {node.getName() for node in app_tree() if node.getName()}
+    return {node.get_name() for node in app_tree() if node.get_name()}
 
 
 def key(*keys):
@@ -42,19 +42,19 @@ def key(*keys):
 
 def press_button_named(expected, activation="space"):
     for node in app_tree():
-        if node.getName() == expected and node.getRoleName() == "push button":
-            node.queryComponent().grabFocus()
+        if node.get_name() == expected and node.get_role_name() == "push button":
+            node.query_component().grab_focus()
             key(activation)
             return
     raise AssertionError(f"Missing accessible calendar button: {expected}")
 
 
 tree = app_tree()
-assert any(node.getName() == "Copy selected date" for node in tree)
-assert any(node.getName() == "Export calendar" for node in tree)
-assert any(node.getName() == "About JW Calendar" for node in tree)
-assert any(node.getName() == "Previous month" for node in tree)
-assert any(node.getName() == "Next month" for node in tree)
+assert any(node.get_name() == "Copy selected date" for node in tree)
+assert any(node.get_name() == "Export calendar" for node in tree)
+assert any(node.get_name() == "About JW Calendar" for node in tree)
+assert any(node.get_name() == "Previous month" for node in tree)
+assert any(node.get_name() == "Next month" for node in tree)
 print("PASS: icon-only actions and month navigation have accessible names")
 
 # Tab through the real Month page and confirm calendar dates can receive focus.
@@ -64,8 +64,8 @@ for _ in range(45):
     key("Tab")
     for node in app_tree():
         try:
-            if node.getState().contains(pyatspi.STATE_FOCUSED):
-                focusable.add(node.getName())
+            if node.get_state_set().contains(pyatspi.STATE_FOCUSED):
+                focusable.add(node.get_name())
         except Exception:
             pass
 assert any(name and ", " in name and "ISO week" in name for name in focusable), (
@@ -74,9 +74,9 @@ assert any(name and ", " in name and "ISO week" in name for name in focusable), 
 print("PASS: Tab reaches an announced calendar date")
 key("Shift+Tab")
 assert any(
-    node.getState().contains(pyatspi.STATE_FOCUSED)
+    node.get_state_set().contains(pyatspi.STATE_FOCUSED)
     for node in app_tree()
-    if node.getName()
+    if node.get_name()
 ), "Shift+Tab did not leave focus on a named control"
 key("Tab")
 print("PASS: Shift+Tab returns focus through the GTK control order")
@@ -85,8 +85,8 @@ print("PASS: Shift+Tab returns focus through the GTK control order")
 # full date/calendar/ISO-week description on the selected grid cell.
 before = names()
 date_button = next(
-    node.getName() for node in app_tree()
-    if node.getRoleName() == "push button" and ", " in node.getName() and "ISO week" in node.getName()
+    node.get_name() for node in app_tree()
+    if node.get_role_name() == "push button" and ", " in node.get_name() and "ISO week" in node.get_name()
 )
 press_button_named(date_button)
 after = names()
@@ -96,8 +96,8 @@ print("PASS: Space activates a keyboard-focused date and exposes its details")
 def selected_date():
     for node in app_tree():
         try:
-            if node.getState().contains(pyatspi.STATE_SELECTED) and "ISO week" in node.getName():
-                return node.getName().split(", ")[1]
+            if node.get_state_set().contains(pyatspi.STATE_SELECTED) and "ISO week" in node.get_name():
+                return node.get_name().split(", ")[1]
         except Exception:
             pass
     raise AssertionError("The selected calendar date is not exposed to AT-SPI")
