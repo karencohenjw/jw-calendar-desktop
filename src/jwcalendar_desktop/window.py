@@ -366,6 +366,7 @@ class CalendarWindow(Adw.ApplicationWindow):
                         button.add_css_class("dim-label")
                     if iso_date(cell.date) == self._selected_date:
                         button.add_css_class("suggested-action")
+                        button.remove_css_class("flat")
                     button.connect("clicked", self._select_date, cell.date)
                 self._calendar_grid.attach(button, col, row_index, 1, 1)
 
