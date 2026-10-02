@@ -130,7 +130,7 @@ open_export_chooser() {
 }
 
 save_native_dialog() {
-  local chooser_id geometry width height
+  local expected_path="$1" chooser_id geometry width height
   chooser_id="$(xdotool search --onlyvisible --name '^Export calendar$' | tail -n 1)"
   [[ -n "$chooser_id" ]] || { echo "Native save dialog did not remain visible." >&2; exit 1; }
   geometry="$(xdotool getwindowgeometry --shell "$chooser_id")"
@@ -139,14 +139,22 @@ save_native_dialog() {
   # GTK's native dialog keeps the filename field focused; explicitly activate
   # its Save button so the GUI check verifies a completed save, not just input.
   xdotool mousemove --window "$chooser_id" "$((width - 48))" "$((height - 29))" click 1
-  sleep 2
+  for attempt in $(seq 1 40); do
+    if ! xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 && [[ -s "$expected_path" ]]; then
+      return 0
+    fi
+    sleep 0.25
+  done
+  echo "Native chooser did not close and create a non-empty file: $expected_path" >&2
+  wmctrl -lG >&2
+  return 1
 }
 window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Down csv
 window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
-save_native_dialog
 csv_path="$PWD/january-2027.csv"
+save_native_dialog "$csv_path"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
 import sys
@@ -154,10 +162,14 @@ from pathlib import Path
 
 path = Path(sys.argv[1])
 assert path.is_file(), f"CSV was not created at {path}"
+assert path.stat().st_size > 0, "CSV export is empty"
 with path.open(encoding="utf-8", newline="") as stream:
-    rows = list(csv.DictReader(stream))
-assert rows and any(row["date"] == "2027-01-01" for row in rows)
-assert rows[0]["weekday"] == "Sunday"
+    reader = csv.DictReader(stream)
+    assert reader.fieldnames == ["week", "weekday", "date", "calendar", "in_month", "iso_week"]
+    rows = list(reader)
+new_year = next((row for row in rows if row["date"] == "2027-01-01"), None)
+assert new_year, "CSV is missing 2027-01-01"
+assert new_year["weekday"] == "Sun", f"Expected abbreviated Sunday, got {new_year['weekday']!r}"
 Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
@@ -166,15 +178,19 @@ window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Up html
 window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
-save_native_dialog
-python - "$PWD/january-2027.html" <<'PY' | tee "$artifact_dir/html-export.txt"
+html_path="$PWD/january-2027.html"
+save_native_dialog "$html_path"
+python - "$html_path" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
 assert path.is_file(), f"HTML was not created at {path}"
+assert path.stat().st_size > 0, "HTML export is empty"
 html = path.read_text(encoding="utf-8")
+assert html.lower().startswith("<!doctype html>")
+assert "<table>" in html and "<thead>" in html and "<tbody>" in html
 assert "January 2027" in html
 assert not re.search(r"(?:src|href)=[\"']https?://", html, re.I)
 Path("artifacts/linux-gui-qa/january-2027.html").write_bytes(path.read_bytes())
