@@ -70,8 +70,10 @@ sleep 2
 
 python3 scripts/linux-accessibility-qa.py | tee "$artifact_dir/accessibility.txt"
 
+# The AT-SPI audit finishes on the Year page; start captures on Month.
+xdotool key --clearmodifiers ctrl+1
+sleep 1
 # Reset to today, then use the app-level arrow keys to reach January 2027.
-# move from the runner's current month to January 2027 using real key events.
 window_geometry="$(xdotool getwindowgeometry --shell "$window_id")"
 X="$(awk -F= '/^X=/{print $2}' <<<"$window_geometry")"
 Y="$(awk -F= '/^Y=/{print $2}' <<<"$window_geometry")"
@@ -137,7 +139,7 @@ window_count_before="$(wmctrl -l | wc -l)"
 # Open and cancel the native export chooser.
 xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
 sleep 0.5
-xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
+xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
 sleep 0.5
 xdotool key --clearmodifiers Down Return
 sleep 1
@@ -150,7 +152,7 @@ sleep 1
 echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
 
 open_export_chooser() {
-  xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
+  xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
   sleep 0.5
   if [[ -n "$1" ]]; then
     xdotool key --clearmodifiers "$1"
