@@ -181,9 +181,9 @@ class CalendarWindow(Adw.ApplicationWindow):
         return box
 
     def _build_year_page(self) -> None:
-        page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
-        page.set_margin_top(22)
-        page.set_margin_bottom(22)
+        page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        page.set_margin_top(12)
+        page.set_margin_bottom(12)
         page.set_margin_start(24)
         page.set_margin_end(24)
         controls = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
@@ -196,7 +196,7 @@ class CalendarWindow(Adw.ApplicationWindow):
         scroller = Gtk.ScrolledWindow()
         scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scroller.set_vexpand(True)
-        self._year_grid = Gtk.Grid(column_spacing=14, row_spacing=14)
+        Gtk.Grid(column_spacing=14, row_spacing=8)
         self._year_grid.set_column_homogeneous(True)
         scroller.set_child(self._year_grid)
         page.append(scroller)
