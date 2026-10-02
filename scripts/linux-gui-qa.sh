@@ -135,7 +135,7 @@ window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
 xdotool key Return
 sleep 2
-csv_path="$HOME/january-2027.csv"
+csv_path="$PWD/january-2027.csv"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
 import sys
@@ -156,7 +156,7 @@ window_count_after="$(wmctrl -l | wc -l)"
 [[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
 xdotool key Return
 sleep 2
-python - "$HOME/january-2027.html" <<'PY' | tee "$artifact_dir/html-export.txt"
+python - "$PWD/january-2027.html" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
 import sys
 from pathlib import Path
