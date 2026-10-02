@@ -6,7 +6,7 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 
 - Application ID: `com.jwcalendar.JWCalendar`
 - Upstream: https://github.com/karencohenjw/jw-calendar-desktop
-- Stable tag: `v0.1.0` (commit `7a42fa52c450a5c8b14827d5b858f0631c8a42d1`). Source archive: https://github.com/karencohenjw/jw-calendar-desktop/archive/refs/tags/v0.1.0.tar.gz. SHA-256 of the downloaded GitHub archive: `2a70a3bdacd8f1b465d56e9398db951446f9de4093126199f32ac1ac55edebb1`.
+- Current stable release: [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1), tagged at `2015d95145c08a16e23ee1cb63639cadbd8a6691`. Earlier release `v0.1.0` is commit `7a42fa52c450a5c8b14827d5b858f0631c8a42d1`; its archive SHA-256 is `2a70a3bdacd8f1b465d56e9398db951446f9de4093126199f32ac1ac55edebb1`.
 - License: MIT; see `LICENSE`.
 - CLI executable: `jwcalendar`
 - Desktop executable: `jw-calendar-desktop`
@@ -16,10 +16,10 @@ This document is a factual checklist, not a Flatpak manifest. No Flatpak or depe
 - Python package: `jwcalendar-calendrical==0.1.0`, MIT; verified source archive and SHA-256 are in `DEPENDENCIES.md`.
 - Network permission for core behavior: not needed.
 - Broad home/host filesystem access: not needed. User-selected export destinations should use a portal.
-- Current public upstream commit: `efe266cf3108950d1ae1760763c00560ad7f02df`. Local unpublished screenshot commit: `d45faa0fd23d75554c87e0e182bf757de6ca88a8`; it must be pushed before its raw URLs resolve. The following local readiness commit is `c67e09c` and is also unpublished.
-- Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python, GTK/Xvfb, metadata, and Snap build checks in GitHub Actions. Linux CI #50 on public commit `efe266c` passed. Linux GUI QA #14 opened and cancelled the native chooser, then failed its CSV file-save assertion. Xvfb is not a substitute for visual review on a real Linux desktop.
-- Clean public checkout: the `v0.1.0` tag was cloned into a new empty directory. Python 3.12 `pip install .` built and installed the package; `python -m build` produced an sdist and wheel. The latest local run passed 25 tests; 2 GTK display tests skipped because macOS has no display. The public Linux CI passed GTK/Xvfb, AppStream, desktop-file, packaging, and stable-grade amd64 Snap checks on `efe266c`. The local `0.1.1` AppStream draft has only been XML-parsed; it has not yet passed Linux AppStream validation.
-- Real Linux screenshots: four genuine, unedited 960 × 700 captures from Ubuntu 24.04.5 LTS, Python 3.12.3, GTK 4.14.5, and libadwaita 1.5.0. They show January 2027 details, the full 2027 view, Gregorian/Julian conversion and date difference, and Help. They are local only until the screenshot commit is pushed. Intended immutable image URLs, pinned to `d45faa0fd23d75554c87e0e182bf757de6ca88a8`:
+- The `v0.1.1` release commit is `2015d95145c08a16e23ee1cb63639cadbd8a6691`; current public `main` descends from it. The verified development branch is [`codex/flathub-readiness-draft`](https://github.com/karencohenjw/jw-calendar-desktop/tree/codex/flathub-readiness-draft). Screenshot commit `d45faa0fd23d75554c87e0e182bf757de6ca88a8` and all later work preserve ancestry.
+- Architectures tested: macOS arm64 Python unit suite, plus Linux amd64 Python 3.10–3.13, GTK/Xvfb, AppStream, desktop integration, and strict Snap build checks. Main CI [#37053336902](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37053336902) and release-tag CI [#37053841406](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37053841406) passed. GUI QA [#37052977644](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37052977644) verified both real file exports. Xvfb is not a substitute for visual review on a real Linux desktop.
+- Clean public checkout: the `v0.1.0` tag was cloned into a new empty directory. Python 3.12 `pip install .` built and installed the package; `python -m build` produced an sdist and wheel. The latest local run passed 25 tests; 2 GTK display tests skipped because macOS has no display. The v0.1.1 Linux CI passed GTK/Xvfb, AppStream, desktop-file, packaging, and strict amd64 Snap checks on `2015d95`; the release metadata passed AppStream validation.
+- Real Linux screenshots: four genuine, unedited 960 × 700 captures from Ubuntu 24.04.5 LTS, Python 3.12.3, GTK 4.14.5, and libadwaita 1.5.0. They show January 2027 details, the full 2027 view, Gregorian/Julian conversion and date difference, and Help. They are public from screenshot commit `d45faa0fd23d75554c87e0e182bf757de6ca88a8`. AppStream references these immutable raw image URLs:
   - https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/month-view.png
   - https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/year-view.png
   - https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/convert-view.png
@@ -33,14 +33,14 @@ Flathub's Python source workflow is commonly handled with `flatpak-pip-generator
 
 ## Portal behavior and permissions
 
-The application uses `Gtk.FileChooserNative` for user-directed file exports and normal GTK clipboard APIs. The GTK chooser visibly opened and cancellation worked in Linux GUI QA; the save flow is not yet verified because run #14 failed before the CSV file assertion passed. The follow-up local GUI script now clicks the visible GTK Save button, but still needs an Ubuntu run. GTK can route its native chooser through XDG Desktop Portal in a sandbox, but a real Flatpak portal sandbox has not been built or tested. The GTK clipboard API is exercised in CI; paste into a separate Linux editor was not verified. Offline behavior has not been tested with network physically disabled, although the application source has no network client and core use is designed to be offline. Do not grant broad filesystem or network access.
+The application uses `Gtk.FileChooserNative` for user-directed file exports and normal GTK clipboard APIs. The GTK chooser visibly opened and cancellation worked. GUI QA run #37052977644 verified non-empty CSV and HTML files, parsed the CSV, checked the January 2027 HTML table, and confirmed the HTML has no remote resources. GTK can route its native chooser through XDG Desktop Portal in a sandbox, but a real Flatpak portal sandbox has not been built or tested. The GTK clipboard API is exercised in CI; paste into a separate Linux editor was not verified. Offline behavior has not been tested with network physically disabled, although the application source has no network client and core use is designed to be offline. Do not grant broad filesystem or network access.
 
 ## Human work before submission
 
 - Build sustained project history and evidence of maintenance/use; all current commits belong to the initial same-day setup.
-- Confirm the final Linux CI, desktop/AppStream validation, published source release, and clean public checkout.
-- Push the local screenshot commit first; it records the actual SHA `d45faa0fd23d75554c87e0e182bf757de6ca88a8`. The local `0.1.1` AppStream screenshot URLs already use direct raw URLs pinned to that SHA. They will work only after that commit is public. Local AppStream release metadata and version bump are draft-only; public stable remains `v0.1.0`.
-- Fix the GUI save automation and pass actual CSV/HTML write and content checks. The latest public GUI QA run confirmed chooser open/cancel but failed on the CSV save assertion.
+- Final Linux CI, desktop/AppStream validation, and public `v0.1.1` release have passed; verify future releases from a clean checkout.
+- The screenshots are public and AppStream image URLs are pinned to screenshot commit `d45faa0fd23d75554c87e0e182bf757de6ca88a8`.
+- GUI file saving and CSV/HTML content checks passed in run #37052977644; a real Flatpak portal sandbox check remains.
 - Re-check the current runtime, SDK, policies, package sources, licenses, and domain proof.
 - Have a human create and review all packaging files, run the offline build and linters, and perform local install/run checks.
 - Human must perform all Flathub submission and reviewer communication. This project task did not create or submit anything there.

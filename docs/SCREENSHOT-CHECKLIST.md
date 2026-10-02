@@ -9,4 +9,4 @@ The captures show:
 3. A Gregorian-to-Julian conversion and a 364-day date difference.
 4. Help, appearance selection, keyboard hints, and project resource links.
 
-The images were reviewed at full size for readable text, complete content, and layout. The year capture shows all twelve months without clipping. They currently exist in the local checkout only: the screenshot commit has not been pushed, so no public immutable image URLs are available. The local AppStream `v0.1.1` screenshot entries are a draft and must be replaced with raw URLs pinned to the actual public screenshot commit SHA after it is pushed. The public repository still reports source release `v0.1.0`; no `v0.1.1` release has been published.
+The images were reviewed at full size for readable text, complete content, and layout. The year capture shows all twelve months without clipping. The screenshots are public at commit `d45faa0fd23d75554c87e0e182bf757de6ca88a8`. AppStream image entries use direct raw URLs pinned to that immutable commit. Public stable is [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1).
