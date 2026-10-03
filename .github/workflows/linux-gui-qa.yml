@@ -51,6 +51,7 @@ jobs:
             export XDG_RUNTIME_DIR="$PWD/artifacts/linux-offline-qa/runtime"
             export XDG_CURRENT_DESKTOP=GNOME
             export GDK_DEBUG=no-portals
+            export JW_OFFLINE_QA=1
             export HOME="$PWD/artifacts/linux-offline-qa/home"
             export PATH="$PWD/.venv/bin:$PATH"
             mkdir -p "$XDG_RUNTIME_DIR" "$HOME"

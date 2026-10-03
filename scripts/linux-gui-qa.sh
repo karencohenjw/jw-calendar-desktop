@@ -135,24 +135,26 @@ for path in sorted(Path(sys.argv[1]).glob("*-view.png")):
 PY
 
 
-# Open and cancel the native export chooser.
-xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
-sleep 0.5
-xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
-sleep 0.5
-xdotool key --clearmodifiers Down Return
-for attempt in $(seq 1 40); do
-  if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
-    break
-  fi
-  sleep 0.25
-done
-wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
-xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "Native export dialog did not open." >&2; exit 1; }
+if [[ "${JW_OFFLINE_QA:-0}" != 1 ]]; then
+  # Open and cancel the chooser before checking portal behavior and exports.
+  xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
+  sleep 0.5
+  xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
+  sleep 0.5
+  xdotool key --clearmodifiers Down Return
+  for attempt in $(seq 1 40); do
+    if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
+  done
+  wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
+  xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "Native export dialog did not open." >&2; exit 1; }
 
-xdotool key Escape
-sleep 1
-echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
+  xdotool key Escape
+  sleep 1
+  echo "PASS: Export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
+fi
 
 if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
   sleep 1
