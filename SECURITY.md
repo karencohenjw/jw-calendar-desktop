@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-JW Calendar `v0.1.0` is the current public supported release. A `v0.1.1` patch is being prepared and is not yet published. Security fixes will be made in the latest supported release.
+JW Calendar `v0.1.1` is the current public supported release. Security fixes will be made in the latest supported release.
 
 ## Reporting a vulnerability
 

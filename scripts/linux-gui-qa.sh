@@ -12,6 +12,7 @@ window_manager_pid=$!
 picom --backend xrender --no-vsync >"$artifact_dir/picom.log" 2>&1 &
 compositor_pid=$!
 app_pid=""
+portal_monitor_pid=""
 
 cleanup() {
   if [[ -n "$app_pid" ]] && kill -0 "$app_pid" 2>/dev/null; then
@@ -19,10 +20,20 @@ cleanup() {
     wait "$app_pid" || true
   fi
   kill "$compositor_pid" "$window_manager_pid" 2>/dev/null || true
+  if [[ -n "$portal_monitor_pid" ]]; then
+    kill "$portal_monitor_pid" 2>/dev/null || true
+    wait "$portal_monitor_pid" 2>/dev/null || true
+  fi
 }
 trap cleanup EXIT
 
 sleep 2
+if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
+  dbus-monitor --session "interface='org.freedesktop.portal.FileChooser'" \
+    >"$artifact_dir/portal-dbus.log" 2>&1 &
+  portal_monitor_pid=$!
+  sleep 1
+fi
 {
   lsb_release -ds
   /usr/bin/python3 --version
@@ -37,7 +48,7 @@ PY
   jwcalendar --help | head -n 1
 } | tee "$artifact_dir/environment.txt"
 
-jw-calendar-desktop >"$artifact_dir/application.log" 2>&1 &
+jw-calendar-desktop >"$artifact_dir/application-portal.log" 2>&1 &
 app_pid=$!
 
 window_id=""
@@ -53,12 +64,16 @@ if [[ -z "$window_id" ]]; then
   exit 1
 fi
 
-wmctrl -ir "$window_id" -e 0,40,40,960,700
+wmctrl -ir "$window_id" -e 0,40,40,1000,700
 wmctrl -ia "$window_id"
 sleep 2
 
+python3 scripts/linux-accessibility-qa.py | tee "$artifact_dir/accessibility.txt"
+
+# The AT-SPI audit finishes on the Year page; start captures on Month.
+xdotool key --clearmodifiers ctrl+1
+sleep 1
 # Reset to today, then use the app-level arrow keys to reach January 2027.
-# move from the runner's current month to January 2027 using real key events.
 window_geometry="$(xdotool getwindowgeometry --shell "$window_id")"
 X="$(awk -F= '/^X=/{print $2}' <<<"$window_geometry")"
 Y="$(awk -F= '/^Y=/{print $2}' <<<"$window_geometry")"
@@ -77,10 +92,10 @@ fi
 sleep 1
 xdotool mousemove --sync 1240 860
 sleep 1
-scrot --focused --border "$artifact_dir/month-view.png"
+gnome-screenshot --window --file="$artifact_dir/month-view.png"
 xdotool mousemove --sync "$((X + 428))" "$((Y + 30))" click 1
 sleep 1
-scrot --focused --border "$artifact_dir/year-view.png"
+gnome-screenshot --window --file="$artifact_dir/year-view.png"
 xdotool mousemove --sync "$((X + 532))" "$((Y + 30))" click 1
 sleep 1
 
@@ -88,10 +103,10 @@ xdotool mousemove --sync "$((X + 385))" "$((Y + 145))" click 1
 sleep 1
 xdotool mousemove --sync 1240 860
 sleep 1
-scrot --focused --border "$artifact_dir/convert-view.png"
+gnome-screenshot --window --file="$artifact_dir/convert-view.png"
 xdotool mousemove --sync "$((X + 628))" "$((Y + 30))" click 1
 sleep 1
-scrot --focused --border "$artifact_dir/help-view.png"
+gnome-screenshot --window --file="$artifact_dir/help-view.png"
 
 wmctrl -lG | tee "$artifact_dir/windows.txt"
 if [[ ! -s "$artifact_dir/month-view.png" ]]; then
@@ -103,32 +118,100 @@ fi
 test -s "$artifact_dir/year-view.png"
 test -s "$artifact_dir/convert-view.png"
 test -s "$artifact_dir/help-view.png"
+python - "$artifact_dir" <<'PY'
+import struct
+import sys
+from pathlib import Path
+
+for path in sorted(Path(sys.argv[1]).glob("*-view.png")):
+    with path.open("rb") as stream:
+        header = stream.read(24)
+    assert header[:8] == b"\x89PNG\r\n\x1a\n", f"{path} is not a PNG"
+    width, height = struct.unpack(">II", header[16:24])
+    assert width <= 1000 and height <= 700, (
+        f"{path.name} is {width}x{height}; Flathub screenshots must be at most 1000x700"
+    )
+    print(f"PASS: {path.name} is {width}x{height} pixels (native window capture).")
+PY
 
 
-window_count_before="$(wmctrl -l | wc -l)"
-# Open and cancel the native export chooser.
-xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
-sleep 0.5
-xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
-sleep 0.5
-xdotool key --clearmodifiers Down Return
-sleep 1
-wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "Native export dialog did not open." >&2; exit 1; }
+if [[ "${JW_OFFLINE_QA:-0}" != 1 ]]; then
+  # Open and cancel the chooser before checking portal behavior and exports.
+  xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
+  sleep 0.5
+  xdotool mousemove --sync "$((X + 863))" "$((Y + 23))" click 1
+  sleep 0.5
+  xdotool key --clearmodifiers Down Return
+  for attempt in $(seq 1 40); do
+    if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
+  done
+  wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
+  xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "Native export dialog did not open." >&2; exit 1; }
 
-xdotool key Escape
-sleep 1
-echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
+  xdotool key Escape
+  sleep 1
+  echo "PASS: Export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
+fi
+
+if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
+  sleep 1
+  if ! grep -Fq 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
+    echo "GTK portal readiness failed: the FileChooser portal was not called." >&2
+    cat "$artifact_dir/application-portal.log" >&2
+    exit 1
+  fi
+  echo "PASS: GTK called the real FileChooser portal for save/export." \
+    | tee "$artifact_dir/portal-result.txt"
+
+  # Portal file chooser was proven above. Restart with GTK's supported
+  # no-portals debug option for repeatable CSV and HTML save/verification.
+  kill "$app_pid"
+  wait "$app_pid" || true
+  app_pid=""
+  GDK_DEBUG=no-portals jw-calendar-desktop >"$artifact_dir/application.log" 2>&1 &
+  app_pid=$!
+  window_id=""
+  for attempt in $(seq 1 40); do
+    window_id="$(xdotool search --onlyvisible --name '^JW Calendar$' 2>/dev/null | head -n 1 || true)"
+    [[ -n "$window_id" ]] && break
+    sleep 0.5
+  done
+  [[ -n "$window_id" ]] || { cat "$artifact_dir/application.log"; echo "JW Calendar did not relaunch after portal QA." >&2; exit 1; }
+  wmctrl -ir "$window_id" -e 0,40,40,1000,700
+  wmctrl -ia "$window_id"
+  sleep 1
+  xdotool mousemove --sync "$((X + 650))" "$((Y + 95))" click 1
+  read -r month_delta < <(/usr/bin/python3 - <<'PY'
+from datetime import date
+today = date.today()
+print((2027 - today.year) * 12 + (1 - today.month))
+PY
+)
+  if (( month_delta > 0 )); then
+    xdotool key --clearmodifiers --repeat "$month_delta" --delay 15 Right
+  elif (( month_delta < 0 )); then
+    xdotool key --clearmodifiers --repeat "$((-month_delta))" --delay 15 Left
+  fi
+  sleep 1
+  xdotool mousemove --sync 1240 860
+fi
 
 open_export_chooser() {
-  xdotool mousemove --sync "$((X + 823))" "$((Y + 23))" click 1
+  xdotool mousemove --sync "$((X + 863))" "$((Y + 23))" click 1
   sleep 0.5
   if [[ -n "$1" ]]; then
     xdotool key --clearmodifiers "$1"
   fi
   xdotool key --clearmodifiers Return
-  sleep 1
+  for attempt in $(seq 1 40); do
+    if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
+  done
   scrot --focused "$artifact_dir/$2-chooser.png"
 }
 
@@ -155,12 +238,12 @@ save_native_dialog() {
   wmctrl -lG >&2
   return 1
 }
-window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Down csv
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
-csv_path="$PWD/january-2027.csv"
-save_native_dialog "$csv_path"
+xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "CSV save chooser did not open." >&2; exit 1; }
+csv_dialog_path="$PWD/$(basename "$artifact_dir")-january-2027.csv"
+save_native_dialog "$csv_dialog_path"
+csv_path="$PWD/$artifact_dir/january-2027.csv"
+mv "$csv_dialog_path" "$csv_path"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
 import sys
@@ -176,16 +259,15 @@ with path.open(encoding="utf-8", newline="") as stream:
 new_year = next((row for row in rows if row["date"] == "2027-01-01"), None)
 assert new_year, "CSV is missing 2027-01-01"
 assert new_year["weekday"] == "Fri", f"Expected abbreviated Friday, got {new_year['weekday']!r}"
-Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
 
-window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser "" html
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
-html_path="$PWD/january-2027.html"
-save_native_dialog "$html_path"
+xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "HTML save chooser did not open." >&2; exit 1; }
+html_dialog_path="$PWD/$(basename "$artifact_dir")-january-2027.html"
+save_native_dialog "$html_dialog_path"
+html_path="$PWD/$artifact_dir/january-2027.html"
+mv "$html_dialog_path" "$html_path"
 python - "$html_path" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
 import sys
@@ -199,7 +281,6 @@ assert html.lower().startswith("<!doctype html>")
 assert "<table>" in html and "<thead>" in html and "<tbody>" in html
 assert "January 2027" in html
 assert not re.search(r"(?:src|href)=[\"']https?://", html, re.I)
-Path("artifacts/linux-gui-qa/january-2027.html").write_bytes(path.read_bytes())
 print("PASS: HTML saved, contains the calendar, and has no remote assets.")
 PY
 

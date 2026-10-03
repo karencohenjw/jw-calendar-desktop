@@ -12,13 +12,15 @@ The official project website is [jwcalendar.com](https://jwcalendar.com/). This 
 - Convert dates between Gregorian and Julian calendars.
 - Calculate elapsed days between dates.
 - Copy the selected date, or export a month as CSV or print-ready, self-contained HTML.
-- Use system, light, or dark color schemes, keyboard month/year navigation, and the native desktop file chooser.
+- Use system, light, or dark color schemes, keyboard month/year navigation, accessible control names, and GTK's asynchronous desktop file chooser.
 - List United States federal statutory and observed holidays from the CLI.
 - Run offline without login, advertising, telemetry, or network permissions.
 
 ## Status and platforms
 
-The current public release is [JW Calendar 0.1.1](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1). Linux with GTK 4 and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted.
+The current public release is [JW Calendar 0.1.1](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1). Linux with GTK 4.10 or newer and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted.
+
+The [Snap Store listing](https://snapcraft.io/jwcalendar) is public on its stable channel; as checked on 2026-10-02 it serves version 0.1.0, older than the current upstream release. The source repository and GitHub release provide the current 0.1.1 source.
 
 The initial repository contents were created with substantial AI assistance; see [AI-ASSISTANCE.md](AI-ASSISTANCE.md). The project owner should review the code and continue maintaining the project before making further releases.
 
@@ -55,6 +57,7 @@ ISO week dates follow ISO 8601 and may have a week-year different from the Grego
 
 - Left/right arrow: previous/next month.
 - Ctrl+left/Ctrl+right: previous/next year.
+- Ctrl+1/Ctrl+2/Ctrl+3/Ctrl+4: Month/Year/Convert/Help page.
 - Today button: return to the current local civil date.
 
 ## Privacy and accessibility

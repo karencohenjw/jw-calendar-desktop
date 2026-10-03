@@ -1,53 +1,43 @@
-# Flathub readiness review — 2026-10-02
+# Upstream and Flathub readiness
 
-This document records engineering findings for a future human-led package review. It is not a Flathub submission and contains no Flatpak manifest.
+Reviewed 2026-10-03 against the live upstream repository and current Flathub documentation. This note describes source-project readiness; it is not a submission or package manifest.
 
-## Proposed identity and ownership verification
+## Current verification record
 
-Proposed application ID: `com.jwcalendar.JWCalendar`. It uses the reverse-DNS form for the controlled `jwcalendar.com` domain. Before submission, the owner must verify the exact ID against current Flathub rules and use the Flathub Developer Portal to obtain a real verification token. Only then publish that token at `https://jwcalendar.com/.well-known/org.flathub.VerifiedApps.txt` (or use the currently supported DNS method). Never invent or commit a token.
+- Remote `main` is `48acdda2459253de88d9c9ea290082d0531c5ed1`. The hardening work is on `codex/upstream-hardening`; it is not yet part of that public `main` commit or a released version.
+- The latest published stable release remains [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1), tag commit `2015d95145c08a16e23ee1cb63639cadbd8a6691`. No `v0.1.2` was created.
+- The final hardening branch state at `a7a3350` passed [Linux GUI QA run 37102710906](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37102710906). It exercised the visible GTK application, live AT-SPI keyboard behavior, a real FileChooser portal call, CSV and HTML saves in a network-disabled namespace, and the current Flathub AppStream linter. Screenshot capture provenance is recorded in [SCREENSHOT-CHECKLIST.md](SCREENSHOT-CHECKLIST.md).
+- Four full-size reviewed application-window captures are pinned to screenshot asset commit `ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad`. Details and limitations are in [SCREENSHOT-CHECKLIST.md](SCREENSHOT-CHECKLIST.md).
 
-Canonical homepage: `https://jwcalendar.com/`. The public upstream repository and issue tracker are `https://github.com/karencohenjw/jw-calendar-desktop` and `https://github.com/karencohenjw/jw-calendar-desktop/issues`.
+## Upstream technical readiness
 
-The public upstream repository now contains the application, tests, metadata, CI, Snap packaging, and human packaging guidance. Its commits were made during the initial project setup on 2026-10-02; that short history is not evidence of sustained maintenance or real-world use.
+- Stable upstream release: [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1), tag commit `2015d95145c08a16e23ee1cb63639cadbd8a6691`. Current `main` is checked independently; see the current CI run linked from its GitHub Actions page.
+- The [Snap Store](https://snapcraft.io/jwcalendar) has a public `stable` channel, last observed at version `0.1.0` on 2026-10-02. That published package predates the latest upstream `v0.1.1`; no Snap Store install counts or individual users were inferred.
+- Application ID `com.jwcalendar.JWCalendar`, installed desktop entry, scalable icon, English AppStream metadata, two executable names, MIT project license, CC0 metadata license, all-ages OARS rating, homepage, repository, and issue tracker are recorded in the source.
+- AppStream's canonical summary is “Browse dates and calendars”. The desktop entry uses the same sentence. Release `0.1.0` is a stable first public release; its note no longer calls it a development release.
+- MetaInfo advertises keyboard and pointing controls plus offline-only operation. It does not claim touch support. The AppStream `supports` relation is advisory metadata; it is not a device compatibility certification.
+- Four English Linux window screenshots show real application content, with the month view first. Their dimensions and native window decoration are reviewed by the Linux GUI workflow; image URLs are pinned to the screenshot commit recorded in the metadata.
+- GUI export uses GTK 4.10+ `Gtk.FileDialog`, obtains a `GFile`, and writes via GIO. GTK uses the desktop FileChooser portal when it is available. The GUI workflow forces GTK's portal path and records a D-Bus call from a normal, unsandboxed Linux session; this is a portal-readiness test, not Flatpak sandbox verification.
+- Linux GUI/AT-SPI, actual network-disabled app/export, screenshot, and current Flathub AppStream linter results are produced by the manually run `Linux GUI QA` workflow. See [accessibility notes](ACCESSIBILITY.md) and [human packaging checklist](HUMAN-FLATPAK-TEST-CHECKLIST.md).
+- The only external Python runtime dependency is `jwcalendar-calendrical==0.1.0` (MIT, no declared runtime dependencies). Its immutable PyPI source archive URL, SHA-256, build/runtime requirements, and verification notes are in [DEPENDENCIES.md](DEPENDENCIES.md). A human packager must stage all build sources before building without network.
+- The current Flathub-hosted GNOME runtime and SDK research snapshot is **GNOME 51**, checked 2026-10-03: [runtime](https://flathub.org/en/apps/org.gnome.Platform) and [SDK](https://flathub.org/en/apps/org.gnome.Sdk). Re-check the latest hosted stable branch immediately before packaging; Flathub requires the latest hosted runtime at submission time.
+- The SVG app icon and supplied 64, 128, and 256 pixel PNGs were inspected at native size and against light and dark backgrounds. The calendar mark remains recognizable, has clear contrast, and has no obvious padding or tiny-detail problem; no icon change was justified.
+- Private Vulnerability Reporting was enabled on the repository's GitHub Advanced Security settings page on 2026-10-02. The public repository's Security → Advisories area is available for private reports. `SECURITY.md` documents this route and the current released version.
+- No human-authored Flatpak manifest, build, or sandbox test is present. A normal Linux portal call does not validate sandbox permissions or document-portal persistence.
 
-## Runtime and build shape
+## Flathub policy and project history
 
-The UI needs a supported GNOME runtime that provides GTK 4, libadwaita, PyGObject, and Python 3.10 or newer. Select the runtime branch that is supported at the time of packaging. The application itself has no network or broad filesystem use. Its only user file access is the explicit save dialog for CSV and HTML export; GTK's file chooser portal should grant access to the chosen destination. Clipboard copy uses the desktop clipboard. The application has no reason to request network, home-directory, device, or session-bus permissions beyond the standard desktop integration supplied by the runtime.
+- The public Git history began on 2026-10-02. The published `v0.1.1` release and the passing hardening-branch CI are authentic source history, but this short history does not demonstrate sustained maintenance or meaningful real-world use.
+- No real user installs, organic usage, third-party package uptake, independent issue reports, or external contributions have been verified for this review. GitHub release download counters should be observed organically; they must not be manipulated. Real user reports, actual package installs, official-site references, and outside contributions may become useful evidence if they occur naturally.
+- Flathub publishes no fixed minimum project age. Do not claim a required 30-day or three-month waiting period.
+- The owner should review AI-assisted source and assets, continue maintenance, and keep this repository's provenance disclosure accurate. The current Flathub policy prohibits AI-generated/assisted manifest content and AI agents creating the Flathub submission PR or its messages. This work created no manifest, submission PR, or reviewer messages.
+- The app ID/domain must be verified by the human owner through the current Flathub verification process before publication. No token has been fabricated or published.
+- `docs/WEBSITE-INTEGRATION-DRAFT.md` contains factual copy and links to the current repository and release. It does not claim a website page exists; the production website was not changed.
 
-The Python dependency is pinned to `jwcalendar-calendrical==0.1.0`. A future package must build from declared source archives with checksums and make all sources available before the offline build step. Do not use network access during the Flatpak build. Package the upstream launcher, scalable icon, and AppStream file from this repository. No final manifest has been authored here.
+## Assessment
 
-## Current policy and quality review
+- **Upstream technical readiness:** YES for the verified hardening branch. The changes still need owner review and integration into `main` before they describe the current public upstream state.
+- **Ready for a human to begin packaging:** YES. The source, metadata, dependency provenance, and build notes are available for human review.
+- **Ready for Flathub submission under current policy/history evidence:** NO. The project still needs organic real-world use and a sustained, demonstrable maintenance record, owner verification and review, a human-created offline package, and true sandbox/portal validation. These are distinct from the source-level checks above.
 
-Flathub's current requirements call for sufficient functional scope, desktop integration, a sustained source history, real-world use, and ongoing maintenance. This upstream project begins with one initial development commit, so timing/policy readiness is not met today. The current generative-AI policy prohibits AI-generated or assisted content in the Flathub manifest and prohibits agents from opening or writing submission PRs and reviewer messages. This task has not created a manifest, submission branch, or PR. A human must perform all later Flathub packaging and submission work.
-
-The GNOME runtime research snapshot is GNOME 50 as of 2026-10-02. Re-check the newest hosted runtime and SDK immediately before a future human packaging effort. The Flathub runtime must be current at submission time.
-
-| Requirement | Status | Pass/Fail/N/A | Evidence | Required action |
-|---|---|---|---|---|
-| Supported runtime | Runtime family identified | Fail | GTK 4 / libadwaita UI; runtime branch intentionally not pinned | Choose a non-EOL GNOME runtime at submission time and build against it |
-| Developer-managed project | Owner and official site identified | Fail | Karen Cohen and jwcalendar.com are documented; repository is new | Human owner review, sustained maintenance, and clear reporting contact |
-| Icon | Original scalable vector plus 64/128/256 pixel PNG renders | Pass, pending Linux review | `data/icons/` | Review on light/dark desktops |
-| Brand colors | Blue and teal documented | Pass, pending review | AppStream branding entries and SVG palette | Confirm brand alignment with project site |
-| Screenshots | Four genuine Linux captures and immutable URLs | Pass, pending human visual review | Ubuntu 24.04.5 LTS / GTK 4.14.5 / libadwaita 1.5.0 captures are public at screenshot commit `d45faa0fd23d75554c87e0e182bf757de6ca88a8`; AppStream URLs point directly to those raw images | Confirm visual fit and keep URLs pinned to the immutable source commit |
-| Name | JW Calendar | Pass, pending name review | AppStream, desktop entry, About window | Confirm no conflicting Flathub application ID/name at submission time |
-| Summary | Concise, functional description | Pass, pending review | “Browse calendars, inspect dates, and calculate date differences” | Human editorial review |
-| Description | Describes actual desktop behavior | Pass, pending review | AppStream description | Reconcile against shipped features before a stable release |
-| Desktop integration | Desktop entry, app ID, scalable icon included | Pass, pending install verification | `data/com.jwcalendar.JWCalendar.desktop`; icon path | Verify installation and launching from a Flatpak build |
-| Source and issue links | Public repository and issue tracker exist | Pass | AppStream and Snap metadata point to the public upstream repository | Re-check links during final public audit |
-| Permissions | No broad permissions planned; native chooser and both exports verified in Ubuntu GUI QA | Pass for unsandboxed GTK QA; Flatpak portal remains unverified | GUI QA run [#37052977644](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37052977644) saved and parsed a 42-cell CSV and a self-contained HTML calendar | Later validate file chooser portal behavior in an actual Flatpak sandbox |
-| Release information | Public [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1) source release published | Pass for source release; Fail for sustained history | `v0.1.1` points to CI-verified commit `2015d95145c08a16e23ee1cb63639cadbd8a6691`; all project history is still from initial setup on 2026-10-02 | Continue human maintenance and use; do not treat same-day development as sustained history |
-| Verification | Domain method identified, no token | Fail until owner action | `jwcalendar.com` is canonical homepage | Obtain actual token in Developer Portal and publish it; never fabricate one |
-| Offline operation | Core path and exports do not use network | Pass, pending runtime test | Source has no network client | Test with network unavailable in Linux environment |
-| Accessibility and localization | Basic labels and selectable details; locale names | Fail / incomplete | Uses system month/day names; visual review not available here | Review keyboard focus, screen reader labels, RTL/layout, and translation readiness |
-| AI provenance | Disclosed | Pass | `AI-ASSISTANCE.md` | Owner reviews content and follows current Flathub disclosure rules |
-
-## Blocking work before a legitimate submission
-
-1. Human owner review of all AI-assisted source, assets, and metadata; keep the provenance disclosure accurate.
-2. Sustained development and meaningful maintenance history beyond the initial same-day setup. Do not manufacture commits, tags, releases, or contributors.
-3. Validate the GUI exports inside a real Flatpak portal sandbox; Ubuntu GTK QA run [#37052977644](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37052977644) verified both saved files and their contents.
-4. Complete the human review of the published release metadata. The four genuine Linux screenshots are public at `d45faa0fd23d75554c87e0e182bf757de6ca88a8`, and AppStream image URLs are pinned to that commit.
-5. Human visual review on Linux, keyboard and accessibility review, file chooser portal behavior, and offline operation. Automated GTK checks under Xvfb do not replace this review.
-6. Select and verify a currently supported runtime, build every dependency offline from pinned sources, and verify the app ID and domain through Flathub's then-current process.
-7. Confirm and publish a real private security contact route.
-8. A human maintainer prepares any eventual Flathub packaging and all submission communication. This repository has no final Flatpak manifest or submission PR.
+Re-read the current [Flathub requirements](https://docs.flathub.org/docs/for-app-authors/requirements), [MetaInfo quality guidelines](https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines/quality-guidelines), [runtime policy](https://docs.flathub.org/docs/for-app-authors/runtimes), and [linter instructions](https://docs.flathub.org/docs/for-app-authors/linter) before any future submission.
