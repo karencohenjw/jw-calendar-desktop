@@ -11,7 +11,7 @@ Reviewed 2026-10-03. This is upstream fact-finding for a future human packager. 
 - GTK requirement: 4.10+ for `Gtk.FileDialog`; libadwaita: 1.4+. GTK, PyGObject, and libadwaita are supplied by the Linux desktop/runtime, not Python dependencies.
 - Only declared third-party Python runtime dependency: `jwcalendar-calendrical==0.1.0` (MIT, no runtime dependencies). The immutable PyPI source URL and SHA-256, plus the project's setuptools build requirement, are in `DEPENDENCIES.md`.
 - Export receives the user-selected GIO file from GTK's file dialog and writes through GIO. GTK may use the XDG FileChooser portal. Clipboard uses the desktop clipboard. Calendar calculation, conversions, and both exporters have no network requirement.
-- The hardening branch passed [Linux GUI QA run 37102312221](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37102312221), including live AT-SPI checks, a real desktop FileChooser portal call, export saves with networking disabled, and current Flathub AppStream lint. It is upstream portal-readiness evidence, not a Flatpak sandbox test.
+- The hardening branch passed [Linux GUI QA run 37102710906](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37102710906), including live AT-SPI checks, a real desktop FileChooser portal call, export saves with networking disabled, and current Flathub AppStream lint. It is upstream portal-readiness evidence, not a Flatpak sandbox test.
 - GitHub Private Vulnerability Reporting was enabled and confirmed in repository settings on 2026-10-02. See `SECURITY.md`.
 - The Snap Store lists `jwcalendar` in the public stable channel at version `0.1.0` as of 2026-10-02; upstream's current GitHub release is `0.1.1`. No usage statistics were inferred from publication.
 

@@ -6,7 +6,7 @@ Reviewed 2026-10-03 against the live upstream repository and current Flathub doc
 
 - Remote `main` is `48acdda2459253de88d9c9ea290082d0531c5ed1`. The hardening work is on `codex/upstream-hardening`; it is not yet part of that public `main` commit or a released version.
 - The latest published stable release remains [`v0.1.1`](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1), tag commit `2015d95145c08a16e23ee1cb63639cadbd8a6691`. No `v0.1.2` was created.
-- The hardening branch passed [Linux GUI QA run 37102312221](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37102312221) at source commit `d9b00886ccb588a1f9e45cfb52cc389741e55d2e`. It exercised the visible GTK application, live AT-SPI keyboard behavior, a real FileChooser portal call, CSV and HTML saves in a network-disabled namespace, and the current Flathub AppStream linter.
+- The final hardening branch state at `a7a3350` passed [Linux GUI QA run 37102710906](https://github.com/karencohenjw/jw-calendar-desktop/actions/runs/37102710906). It exercised the visible GTK application, live AT-SPI keyboard behavior, a real FileChooser portal call, CSV and HTML saves in a network-disabled namespace, and the current Flathub AppStream linter. Screenshot capture provenance is recorded in [SCREENSHOT-CHECKLIST.md](SCREENSHOT-CHECKLIST.md).
 - Four full-size reviewed application-window captures are pinned to screenshot asset commit `ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad`. Details and limitations are in [SCREENSHOT-CHECKLIST.md](SCREENSHOT-CHECKLIST.md).
 
 ## Upstream technical readiness
