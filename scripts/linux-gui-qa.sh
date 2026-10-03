@@ -64,7 +64,7 @@ if [[ -z "$window_id" ]]; then
   exit 1
 fi
 
-wmctrl -ir "$window_id" -e 0,40,40,930,660
+wmctrl -ir "$window_id" -e 0,40,40,1000,700
 wmctrl -ia "$window_id"
 sleep 2
 
