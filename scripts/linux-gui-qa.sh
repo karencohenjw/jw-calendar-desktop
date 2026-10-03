@@ -180,7 +180,7 @@ if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
     sleep 0.5
   done
   [[ -n "$window_id" ]] || { cat "$artifact_dir/application.log"; echo "JW Calendar did not relaunch after portal QA." >&2; exit 1; }
-  wmctrl -ir "$window_id" -e 0,40,40,930,660
+  wmctrl -ir "$window_id" -e 0,40,40,1000,700
   wmctrl -ia "$window_id"
   sleep 1
   xdotool mousemove --sync "$((X + 650))" "$((Y + 95))" click 1
