@@ -46,10 +46,11 @@ jobs:
             appstream /mnt/data/com.jwcalendar.JWCalendar.metainfo.xml
       - name: Run the actual GTK application with networking disabled
         run: |
-          sudo unshare --net -- bash -c '
+          sudo --preserve-env=DISPLAY unshare --net -- bash -c '
             ip link set lo up
             export XDG_RUNTIME_DIR="$PWD/artifacts/linux-offline-qa/runtime"
             export XDG_CURRENT_DESKTOP=GNOME
+            export GDK_DEBUG=no-portals
             export HOME="$PWD/artifacts/linux-offline-qa/home"
             export PATH="$PWD/.venv/bin:$PATH"
             mkdir -p "$XDG_RUNTIME_DIR" "$HOME"
@@ -57,6 +58,7 @@ jobs:
             dbus-run-session -- xvfb-run -a --server-args="-screen 0 1280x900x24" \
               bash scripts/linux-gui-qa.sh artifacts/linux-offline-qa
           '
+          sudo chmod -R a+rX artifacts/linux-offline-qa
       - name: Upload diagnostic Linux GUI evidence
         if: always()
         uses: actions/upload-artifact@v6

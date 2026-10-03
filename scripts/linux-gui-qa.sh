@@ -238,7 +238,7 @@ save_native_dialog() {
 }
 open_export_chooser Down csv
 xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "CSV save chooser did not open." >&2; exit 1; }
-csv_path="$PWD/january-2027.csv"
+csv_path="$PWD/$artifact_dir/january-2027.csv"
 save_native_dialog "$csv_path"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
@@ -255,13 +255,12 @@ with path.open(encoding="utf-8", newline="") as stream:
 new_year = next((row for row in rows if row["date"] == "2027-01-01"), None)
 assert new_year, "CSV is missing 2027-01-01"
 assert new_year["weekday"] == "Fri", f"Expected abbreviated Friday, got {new_year['weekday']!r}"
-Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
 
 open_export_chooser "" html
 xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "HTML save chooser did not open." >&2; exit 1; }
-html_path="$PWD/january-2027.html"
+html_path="$PWD/$artifact_dir/january-2027.html"
 save_native_dialog "$html_path"
 python - "$html_path" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
@@ -276,7 +275,6 @@ assert html.lower().startswith("<!doctype html>")
 assert "<table>" in html and "<thead>" in html and "<tbody>" in html
 assert "January 2027" in html
 assert not re.search(r"(?:src|href)=[\"']https?://", html, re.I)
-Path("artifacts/linux-gui-qa/january-2027.html").write_bytes(path.read_bytes())
 print("PASS: HTML saved, contains the calendar, and has no remote assets.")
 PY
 
