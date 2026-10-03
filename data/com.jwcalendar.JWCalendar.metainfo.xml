@@ -40,19 +40,19 @@
   <screenshots>
     <screenshot type="default" xml:lang="en">
       <caption>Browse a month and inspect selected-date details</caption>
-      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/month-view.png</image>
+      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad/data/screenshots/month-view.png</image>
     </screenshot>
     <screenshot xml:lang="en">
       <caption>See all twelve months in a compact year view</caption>
-      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/year-view.png</image>
+      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad/data/screenshots/year-view.png</image>
     </screenshot>
     <screenshot xml:lang="en">
       <caption>Convert Gregorian and Julian dates and calculate elapsed days</caption>
-      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/convert-view.png</image>
+      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad/data/screenshots/convert-view.png</image>
     </screenshot>
     <screenshot xml:lang="en">
       <caption>Choose an appearance and open calendar references</caption>
-      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/d45faa0fd23d75554c87e0e182bf757de6ca88a8/data/screenshots/help-view.png</image>
+      <image>https://raw.githubusercontent.com/karencohenjw/jw-calendar-desktop/ab5e7d41b9b25bcf50fbe0bfdf22a76f60e5e0ad/data/screenshots/help-view.png</image>
     </screenshot>
   </screenshots>
   <releases>
