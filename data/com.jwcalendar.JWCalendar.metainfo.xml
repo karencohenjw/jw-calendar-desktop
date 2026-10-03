@@ -56,6 +56,11 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.1.2" date="2026-10-03" type="stable">
+      <description>
+        <p>Improves accessibility and keyboard navigation, updates CSV and HTML export behavior, and refreshes the Linux screenshots. Includes expanded Linux desktop checks and clearer project documentation.</p>
+      </description>
+    </release>
     <release version="0.1.1" date="2026-10-02" type="stable">
       <description>
         <p>Improves selected-date contrast, navigation clarity, and the compact year view. Adds Linux screenshots and expanded desktop integration checks.</p>

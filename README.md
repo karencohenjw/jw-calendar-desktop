@@ -18,9 +18,9 @@ The official project website is [jwcalendar.com](https://jwcalendar.com/). This 
 
 ## Status and platforms
 
-The current public release is [JW Calendar 0.1.1](https://github.com/karencohenjw/jw-calendar-desktop/releases/tag/v0.1.1). Linux with GTK 4.10 or newer and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted.
+The current upstream source version is JW Calendar 0.1.2; see the [release history](https://github.com/karencohenjw/jw-calendar-desktop/releases). Linux with GTK 4.10 or newer and libadwaita 1.4 or newer is the intended platform; macOS and Windows are not supported. A Flatpak package has not been prepared or submitted.
 
-The [Snap Store listing](https://snapcraft.io/jwcalendar) is public on its stable channel; as checked on 2026-10-02 it serves version 0.1.0, older than the current upstream release. The source repository and GitHub release provide the current 0.1.1 source.
+The [Snap Store listing](https://snapcraft.io/jwcalendar) is public on its stable channel; as checked on 2026-10-02 it serves version 0.1.0, older than the current upstream source. The source repository and GitHub releases provide the current source.
 
 The initial repository contents were created with substantial AI assistance; see [AI-ASSISTANCE.md](AI-ASSISTANCE.md). The project owner should review the code and continue maintaining the project before making further releases.
 

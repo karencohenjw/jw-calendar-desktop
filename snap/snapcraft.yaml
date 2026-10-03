@@ -1,6 +1,6 @@
 name: jwcalendar
 title: JW Calendar
-version: '0.1.1'
+version: '0.1.2'
 summary: Browse calendars, inspect dates, and calculate date differences
 description: |
   JW Calendar is an offline Gregorian and Julian calendar and date utility.

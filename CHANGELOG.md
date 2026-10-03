@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 — 2026-10-03
+
+- Improve accessible names and descriptions for calendar controls, and keyboard navigation between dates and pages.
+- Save CSV and self-contained HTML exports through GTK's asynchronous file chooser.
+- Refresh Ubuntu Linux screenshots for the month, year, conversion, and Help views.
+- Expand Linux GUI checks for accessibility, keyboard navigation, offline operation, and CSV/HTML exports.
+- Clarify build dependencies and improve security, contributor, and release documentation.
+
 ## 0.1.1 — 2026-10-02
 
 - Fix selected-date contrast in the GTK month view.
