@@ -238,8 +238,10 @@ save_native_dialog() {
 }
 open_export_chooser Down csv
 xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "CSV save chooser did not open." >&2; exit 1; }
+csv_dialog_path="$PWD/$(basename "$artifact_dir")-january-2027.csv"
+save_native_dialog "$csv_dialog_path"
 csv_path="$PWD/$artifact_dir/january-2027.csv"
-save_native_dialog "$csv_path"
+mv "$csv_dialog_path" "$csv_path"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
 import csv
 import sys
@@ -260,8 +262,10 @@ PY
 
 open_export_chooser "" html
 xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "HTML save chooser did not open." >&2; exit 1; }
+html_dialog_path="$PWD/$(basename "$artifact_dir")-january-2027.html"
+save_native_dialog "$html_dialog_path"
 html_path="$PWD/$artifact_dir/january-2027.html"
-save_native_dialog "$html_path"
+mv "$html_dialog_path" "$html_path"
 python - "$html_path" <<'PY' | tee "$artifact_dir/html-export.txt"
 import re
 import sys
