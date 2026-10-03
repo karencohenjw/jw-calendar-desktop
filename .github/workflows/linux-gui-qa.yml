@@ -55,10 +55,13 @@ jobs:
             export PATH="$PWD/.venv/bin:$PATH"
             mkdir -p "$XDG_RUNTIME_DIR" "$HOME"
             chmod 700 "$XDG_RUNTIME_DIR"
-            dbus-run-session -- xvfb-run -a --server-args="-screen 0 1280x900x24" \
+            xvfb-run -a --server-args="-screen 0 1280x900x24" \
+              dbus-run-session -- \
               bash scripts/linux-gui-qa.sh artifacts/linux-offline-qa
           '
-          sudo chmod -R a+rX artifacts/linux-offline-qa
+      - name: Make offline GUI evidence readable
+        if: always()
+        run: sudo chmod -R a+rX artifacts/linux-offline-qa 2>/dev/null || true
       - name: Upload diagnostic Linux GUI evidence
         if: always()
         uses: actions/upload-artifact@v6
