@@ -156,7 +156,7 @@ echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact
 
 if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
   sleep 1
-  if ! rg -q 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
+  if ! grep -Fq 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
     echo "GTK portal readiness failed: the FileChooser portal was not called." >&2
     cat "$artifact_dir/application-portal.log" >&2
     exit 1
