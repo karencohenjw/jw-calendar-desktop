@@ -139,7 +139,7 @@ if [[ "${JW_OFFLINE_QA:-0}" != 1 ]]; then
   # Open and cancel the chooser before checking portal behavior and exports.
   xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
   sleep 0.5
-  xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
+  xdotool mousemove --sync "$((X + 863))" "$((Y + 23))" click 1
   sleep 0.5
   xdotool key --clearmodifiers Down Return
   for attempt in $(seq 1 40); do
@@ -200,7 +200,7 @@ PY
 fi
 
 open_export_chooser() {
-  xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
+  xdotool mousemove --sync "$((X + 863))" "$((Y + 23))" click 1
   sleep 0.5
   if [[ -n "$1" ]]; then
     xdotool key --clearmodifiers "$1"
