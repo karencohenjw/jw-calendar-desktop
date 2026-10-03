@@ -48,7 +48,7 @@ PY
   jwcalendar --help | head -n 1
 } | tee "$artifact_dir/environment.txt"
 
-jw-calendar-desktop >"$artifact_dir/application.log" 2>&1 &
+jw-calendar-desktop >"$artifact_dir/application-portal.log" 2>&1 &
 app_pid=$!
 
 window_id=""
@@ -154,6 +154,49 @@ xdotool key Escape
 sleep 1
 echo "PASS: Native export chooser opened and Escape cancelled." | tee "$artifact_dir/file-chooser.txt"
 
+if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
+  sleep 1
+  if ! rg -q 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
+    echo "GTK portal readiness failed: the FileChooser portal was not called." >&2
+    cat "$artifact_dir/application-portal.log" >&2
+    exit 1
+  fi
+  echo "PASS: GTK called the real FileChooser portal for save/export." \
+    | tee "$artifact_dir/portal-result.txt"
+
+  # Portal file chooser was proven above. Restart with GTK's supported
+  # no-portals debug option for repeatable CSV and HTML save/verification.
+  kill "$app_pid"
+  wait "$app_pid" || true
+  app_pid=""
+  GDK_DEBUG=no-portals jw-calendar-desktop >"$artifact_dir/application.log" 2>&1 &
+  app_pid=$!
+  window_id=""
+  for attempt in $(seq 1 40); do
+    window_id="$(xdotool search --onlyvisible --name '^JW Calendar$' 2>/dev/null | head -n 1 || true)"
+    [[ -n "$window_id" ]] && break
+    sleep 0.5
+  done
+  [[ -n "$window_id" ]] || { cat "$artifact_dir/application.log"; echo "JW Calendar did not relaunch after portal QA." >&2; exit 1; }
+  wmctrl -ir "$window_id" -e 0,40,40,930,660
+  wmctrl -ia "$window_id"
+  sleep 1
+  xdotool mousemove --sync "$((X + 650))" "$((Y + 95))" click 1
+  read -r month_delta < <(/usr/bin/python3 - <<'PY'
+from datetime import date
+today = date.today()
+print((2027 - today.year) * 12 + (1 - today.month))
+PY
+)
+  if (( month_delta > 0 )); then
+    xdotool key --clearmodifiers --repeat "$month_delta" --delay 15 Right
+  elif (( month_delta < 0 )); then
+    xdotool key --clearmodifiers --repeat "$((-month_delta))" --delay 15 Left
+  fi
+  sleep 1
+  xdotool mousemove --sync 1240 860
+fi
+
 open_export_chooser() {
   xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
   sleep 0.5
@@ -245,13 +288,3 @@ if ! kill -0 "$app_pid" 2>/dev/null; then
 fi
 
 echo "PASS: JW Calendar launched as a visible Linux GTK window." | tee "$artifact_dir/result.txt"
-if [[ "${JW_PORTAL_QA:-0}" == 1 ]]; then
-  sleep 1
-  if ! rg -q 'org.freedesktop.portal.FileChooser' "$artifact_dir/portal-dbus.log"; then
-    echo "GTK portal readiness failed: the FileChooser portal was not called." >&2
-    cat "$artifact_dir/application.log" >&2
-    exit 1
-  fi
-  echo "PASS: GTK called the real FileChooser portal for save/export." \
-    | tee "$artifact_dir/portal-result.txt"
-fi
