@@ -78,7 +78,12 @@ class WindowSmokeTests(unittest.TestCase):
         self.assertEqual(window._selected_date, "2028-02-29")
         selected_button = window._calendar_grid.get_first_child()
         while selected_button is not None:
-            if selected_button.get_tooltip_text() == "2028-02-29 · 2028-W09":
+            description = selected_button.get_tooltip_text() or ""
+            if (
+                description.startswith("Selected date, ")
+                and "2028-02-29" in description
+                and "ISO week 2028-W09" in description
+            ):
                 break
             selected_button = selected_button.get_next_sibling()
         self.assertIsNotNone(selected_button)
