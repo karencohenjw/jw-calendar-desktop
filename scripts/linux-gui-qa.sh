@@ -135,17 +135,20 @@ for path in sorted(Path(sys.argv[1]).glob("*-view.png")):
 PY
 
 
-window_count_before="$(wmctrl -l | wc -l)"
 # Open and cancel the native export chooser.
 xdotool mousemove --sync "$((X + 326))" "$((Y + 30))" click 1
 sleep 0.5
 xdotool mousemove --sync "$((X + 794))" "$((Y + 23))" click 1
 sleep 0.5
 xdotool key --clearmodifiers Down Return
-sleep 1
+for attempt in $(seq 1 40); do
+  if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.25
+done
 wmctrl -lG | tee "$artifact_dir/windows-after-export.txt"
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "Native export dialog did not open." >&2; exit 1; }
+xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "Native export dialog did not open." >&2; exit 1; }
 
 xdotool key Escape
 sleep 1
@@ -158,7 +161,12 @@ open_export_chooser() {
     xdotool key --clearmodifiers "$1"
   fi
   xdotool key --clearmodifiers Return
-  sleep 1
+  for attempt in $(seq 1 40); do
+    if xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
+  done
   scrot --focused "$artifact_dir/$2-chooser.png"
 }
 
@@ -185,10 +193,8 @@ save_native_dialog() {
   wmctrl -lG >&2
   return 1
 }
-window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser Down csv
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "CSV save chooser did not open." >&2; exit 1; }
+xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "CSV save chooser did not open." >&2; exit 1; }
 csv_path="$PWD/january-2027.csv"
 save_native_dialog "$csv_path"
 python - "$csv_path" <<'PY' | tee "$artifact_dir/csv-export.txt"
@@ -210,10 +216,8 @@ Path("artifacts/linux-gui-qa/january-2027.csv").write_bytes(path.read_bytes())
 print(f"PASS: CSV saved and parsed ({len(rows)} calendar cells).")
 PY
 
-window_count_before="$(wmctrl -l | wc -l)"
 open_export_chooser "" html
-window_count_after="$(wmctrl -l | wc -l)"
-[[ "$window_count_after" -gt "$window_count_before" ]] || { echo "HTML save chooser did not open." >&2; exit 1; }
+xdotool search --onlyvisible --name '^Export calendar$' >/dev/null 2>&1 || { echo "HTML save chooser did not open." >&2; exit 1; }
 html_path="$PWD/january-2027.html"
 save_native_dialog "$html_path"
 python - "$html_path" <<'PY' | tee "$artifact_dir/html-export.txt"
