@@ -24,6 +24,10 @@ The dependency is not expected to be included in a GNOME runtime and must be pro
 
 There are no network calls in the calendar core. GUI toolkit libraries are not Python package dependencies in `pyproject.toml`; they are installed from the Linux distribution or supplied by the desktop runtime.
 
+## Python build requirement
+
+`pyproject.toml` declares the `setuptools.build_meta` backend and `setuptools>=77` as a build-system requirement. Setuptools is not an application runtime dependency. A human Flatpak packager must choose a concrete setuptools release, review its license and immutable source archive, record and verify its checksum, and stage it with the application dependency before attempting the network-disabled build. No build dependency manifest or generated source fragment is included here.
+
 ## Flathub Python source workflow research
 
 Flathub maintains the `flatpak-builder-tools` project, which includes `flatpak-pip-generator` for translating Python package inputs into offline build sources. A human packager should select and read the current tool documentation, review every resolved source, version, license and hash, and ensure the eventual build works with network disabled. The AI did not run the generator and did not create a dependency manifest.
